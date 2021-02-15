@@ -3,26 +3,52 @@
     <h3 class="offset-4">Cadastro de estoques para materias primas</h3>
   </div>
   <div class="card-body">
-    <form>
+    <form [formGroup]="formularioCadastro">
       <div class="form-row">
         <div class="form-group col-md-6">
           <label for="nome">Nome</label>
-          <input type="text" class="form-control" id="nome">
+          <input type="text" class="form-control" id="nome" formControlName="nome">
         </div>
         <div class="form-group col-md-6">
           <label for="capacidade">Capacidade</label>
-          <input type="text" class="form-control" id="capacidade">
+          <input type="text" class="form-control" id="capacidade" formControlName="capacidade">
         </div>
       </div>
-      <div class="form-group">
-        <div class="form-check">
-          <input class="form-check-input mt-3" type="checkbox" id="gridCheck">
+      <div class="form-inline" formArrayName="materiasPrimas">
+        <div class="form-check ml-5 " *ngFor="let materiasPrimas of obterFormArray().controls;let i=index">
+          <input class="form-check-input mt-1" type="checkbox" id="gridCheck" [formControlName]="i">
           <label class="form-check-label " for="gridCheck">
-            Materias primas
+            {{listaDeMateriasPrimas[i]}}
           </label>
         </div>
       </div>
       <button  class="btn btn-success">Cadastrar</button>
+    </form>
+  </div>
+</div>
+
+<div class="card font mt-3 scroll">
+  <div class="card-header">
+    <h3 class="offset-4">Estoques cadastrados até agora</h3>
+  </div>
+  <div class="card-body">
+    <form>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="nome2">Nome</label>
+          <input type="text" class="form-control" id="nome2">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="capacidade2">Capacidade</label>
+          <input type="text" class="form-control" id="capacidade2">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="materiasPrimas">Materias primas</label>
+          <select type="text" class="form-control" id="materiasPrimas">
+            <option>Leite</option>
+          </select>
+        </div>
+      </div>
     </form>
   </div>
 </div>
