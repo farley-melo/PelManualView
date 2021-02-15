@@ -11,7 +11,7 @@
         </div>
         <div class="form-group col-md-6">
           <label for="capacidade">Capacidade</label>
-          <input type="text" class="form-control" id="capacidade" formControlName="capacidade">
+          <input type="text" class="form-control" id="capacidade" formControlName="capacidade" (keypress)="somenteNumeros($event)">
         </div>
       </div>
       <h4>Escolha as materias primas que este estoque pode conter:</h4>
@@ -23,7 +23,7 @@
           </label>
         </div>
       </div>
-      <button  class="btn btn-success">Cadastrar</button>
+      <button  class="btn btn-success" (click)="cadastrar()">Cadastrar</button>
     </form>
   </div>
 </div>
@@ -41,7 +41,7 @@
         </div>
         <div class="form-group col-md-3">
           <label for="capacidade2">Capacidade</label>
-          <input type="text" class="form-control" id="capacidade2">
+          <input type="text" class="form-control" id="capacidade2" >
         </div>
         <div class="form-group col-md-3">
           <label for="materiasPrimas">Materias primas</label>
@@ -56,3 +56,15 @@
     </form>
   </div>
 </div>
+
+<ng-template #errorTemplate>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left">Modal</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)=" referenciaModalError.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    This is a modal.
+  </div>
+</ng-template>
