@@ -14,7 +14,8 @@
           <input type="text" class="form-control" id="capacidade" formControlName="capacidade">
         </div>
       </div>
-      <div class="form-inline" formArrayName="materiasPrimas">
+      <h4>Escolha as materias primas que este estoque pode conter:</h4>
+      <div class="form-inline bg-warning" formArrayName="materiasPrimas">
         <div class="form-check ml-5 " *ngFor="let materiasPrimas of obterFormArray().controls;let i=index">
           <input class="form-check-input mt-1" type="checkbox" id="gridCheck" [formControlName]="i">
           <label class="form-check-label " for="gridCheck">
@@ -33,20 +34,23 @@
   </div>
   <div class="card-body">
     <form>
-      <div class="form-row">
-        <div class="form-group col-md-4">
+      <div class="form-row bg-warning">
+        <div class="form-group col-md-3">
           <label for="nome2">Nome</label>
           <input type="text" class="form-control" id="nome2">
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
           <label for="capacidade2">Capacidade</label>
           <input type="text" class="form-control" id="capacidade2">
         </div>
-        <div class="form-group col-md-4">
+        <div class="form-group col-md-3">
           <label for="materiasPrimas">Materias primas</label>
           <select type="text" class="form-control" id="materiasPrimas">
             <option>Leite</option>
           </select>
+        </div>
+        <div class="form-inline col-md-3 mt-4">
+          <button class="btn btn-danger">Excluir</button>
         </div>
       </div>
     </form>
