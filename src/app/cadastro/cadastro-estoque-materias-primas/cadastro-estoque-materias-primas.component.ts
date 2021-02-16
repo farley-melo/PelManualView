@@ -17,6 +17,9 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
   @ViewChild('errorTemplate') errorTemplate:TemplateRef<any>;
   referenciaModalError:BsModalRef;
   listaTanque:Tanque[]=[];
+  @ViewChild('desejaDeletartemplate')desejaDeletartemplate:TemplateRef<any>;
+  referenciaModalDeletar:BsModalRef;
+  indiceParaDeleçaoTanque:number=0;
 
   constructor(private formsBuilder:FormBuilder,
               private carregarMateriasPrimasService:CarregarMateriasPrimasService,
@@ -91,6 +94,16 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
   }
 
   excluirTanque(i: number) {
-    this.listaTanque.splice(i,1);
+    this.indiceParaDeleçaoTanque=i;
+    this.referenciaModalDeletar=this.modalService.show(this.desejaDeletartemplate,{class:'modal-dialog-centered'});
+  }
+
+  confirm() {
+    this.listaTanque.splice(this.indiceParaDeleçaoTanque,1);
+    this.referenciaModalDeletar.hide();
+  }
+
+  decline() {
+    this.referenciaModalDeletar.hide();
   }
 }
