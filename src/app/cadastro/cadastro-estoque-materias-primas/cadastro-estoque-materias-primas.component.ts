@@ -3,6 +3,7 @@ import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validat
 import {CarregarMateriasPrimasService} from './carregar-materias-primas.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {ValidateFn} from 'codelyzer/walkerFactory/walkerFn';
+import {Tanque} from './tanque';
 
 @Component({
   selector: 'app-cadastro-estoque-materias-primas',
@@ -15,6 +16,7 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
   formularioCadastro:FormGroup;
   @ViewChild('errorTemplate') errorTemplate:TemplateRef<any>;
   referenciaModalError:BsModalRef;
+  listaTanque:Tanque[]=[];
 
   constructor(private formsBuilder:FormBuilder,
               private carregarMateriasPrimasService:CarregarMateriasPrimasService,
@@ -58,8 +60,37 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
   cadastrar() {
     if(this.formularioCadastro.valid){
       //cadatra o tanque no banco de dados
+      let tanque:Tanque=new Tanque();
+      let listaMateriaPrimaResult:string[]=[];
+      tanque.nome=this.formularioCadastro.get('nome')?.value;
+      tanque.capacidade=this.formularioCadastro.get('capacidade')?.value;
+      for (let i=0;i<this.listaDeMateriasPrimas.length;i++){
+        if(this.obterFormArray().controls[i].value==true){
+          listaMateriaPrimaResult.push(this.listaDeMateriasPrimas[i]);
+        }
+      }
+      tanque.materiasPrimas=listaMateriaPrimaResult;
+      this.listaTanque.push(tanque);
+      this.formularioCadastro.reset();
     }else{
-      this.referenciaModalError=this.modalService.show(this.errorTemplate,{class:'modal-dialog-centered'})
+      this.referenciaModalError=this.modalService.show(this.errorTemplate,{class:'modal-dialog-centered'});
+      let listarErrors:string[]=[];
+      Object.keys(this.formularioCadastro.controls).forEach(formNome=>{
+        if(formNome=='nome'&&this.formularioCadastro.get(formNome)?.invalid){
+          listarErrors.push('O nome nao pode estar em branco')
+        }
+        if(formNome=='capacidade'&&this.formularioCadastro.get(formNome)?.invalid){
+          listarErrors.push('A capacidade nao pode estar em branco')
+        }
+        if(formNome=='materiasPrimas'&&this.formularioCadastro.get(formNome)?.invalid){
+          listarErrors.push('Deve haver pelo menos uma materia prima selecionada')
+        }
+      })
+      this.referenciaModalError.content=listarErrors;
     }
+  }
+
+  excluirTanque(i: number) {
+    this.listaTanque.splice(i,1);
   }
 }

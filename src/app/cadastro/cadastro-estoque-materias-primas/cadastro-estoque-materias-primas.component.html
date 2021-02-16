@@ -34,23 +34,23 @@
   </div>
   <div class="card-body">
     <form>
-      <div class="form-row bg-warning">
+      <div class="form-row bg-warning" *ngFor="let tanque of listaTanque;let i=index">
         <div class="form-group col-md-3">
           <label for="nome2">Nome</label>
-          <input type="text" class="form-control" id="nome2">
+          <input type="text" class="form-control" id="nome2" value="{{tanque.nome}}">
         </div>
         <div class="form-group col-md-3">
           <label for="capacidade2">Capacidade</label>
-          <input type="text" class="form-control" id="capacidade2" >
+          <input type="text" class="form-control" id="capacidade2" value="{{tanque.capacidade}}" >
         </div>
         <div class="form-group col-md-3">
           <label for="materiasPrimas">Materias primas</label>
           <select type="text" class="form-control" id="materiasPrimas">
-            <option>Leite</option>
+            <option *ngFor="let materia of tanque.materiasPrimas">{{materia}}</option>
           </select>
         </div>
         <div class="form-inline col-md-3 mt-4">
-          <button class="btn btn-danger">Excluir</button>
+          <button class="btn btn-danger" (click)="excluirTanque(i)">Excluir</button>
         </div>
       </div>
     </form>
@@ -58,13 +58,15 @@
 </div>
 
 <ng-template #errorTemplate>
-  <div class="modal-header">
-    <h4 class="modal-title pull-left">Modal</h4>
+  <div class="modal-header bg-danger">
+    <h4 class="modal-title pull-left">Lista de erros</h4>
     <button type="button" class="close pull-right" aria-label="Close" (click)=" referenciaModalError.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
-    This is a modal.
+    <ul>
+      <li *ngFor="let erro of referenciaModalError.content">{{erro}}</li>
+    </ul>
   </div>
 </ng-template>
