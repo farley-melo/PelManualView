@@ -3,7 +3,15 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav offset-1">
       <li class="nav-item"routerLinkActive="active">
-        <a class="nav-link" routerLink="cadastro-estoque-materias-primas">Cadastros</a>
+        <div class="btn-group" dropdown>
+          <a class="nav-link"  aria-controls="dropdown-basic" id="button-basic" dropdownToggle>Cadastros</a>
+          <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+              role="menu" aria-labelledby="button-basic">
+            <li role="menuitem"><a class="dropdown-item"routerLink="cadastro-estoque-materias-primas">Cadastrar depositos</a></li>
+            <li role="menuitem"><a class="dropdown-item" routerLink="cadastro-estoque-materias-primas/cadastrar_materias_primas">Cadastrar materias primas</a></li>
+            <li role="menuitem"><a class="dropdown-item" routerLink="cadastro-estoque-materias-primas/cadastrar_formulas">Cadastrar formulas</a></li>
+          </ul>
+        </div>
       </li>
       <li class="nav-item ml-2" routerLinkActive="active">
         <a class="nav-link" href="#">Estoque de materias primas</a>
