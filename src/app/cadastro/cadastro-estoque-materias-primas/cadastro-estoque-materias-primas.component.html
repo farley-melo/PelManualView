@@ -14,7 +14,7 @@
           <input type="text" class="form-control" id="capacidade" formControlName="capacidade" (keypress)="somenteNumeros($event)">
         </div>
       </div>
-      <h4>Escolha as materias primas que este estoque pode conter:</h4>
+      <h4>Escolha as materias primas que este deposito pode conter:</h4>
       <div class="form-inline bg-warning" formArrayName="materiasPrimas">
         <div class="form-check ml-5 " *ngFor="let materiasPrimas of obterFormArray().controls;let i=index">
           <input class="form-check-input mt-1" type="checkbox" id="gridCheck" [formControlName]="i">
