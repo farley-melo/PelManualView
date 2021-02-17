@@ -3,26 +3,26 @@
     <h3 class="offset-4">Cadastro de formulas</h3>
   </div>
   <div class="card-body">
-    <form>
+    <form  [formGroup]="formularioCadastro">
       <div class="form-row">
         <div class="form-group col-md-3">
           <label for="gordura">Gordura</label>
-          <input type="text" class="form-control" id="gordura" >
+          <input type="text" class="form-control" id="gordura" formControlName="gordura">
         </div>
         <div class="form-group col-md-3">
           <label for="fatorAcucar">Fator açucar</label>
-          <input type="text" class="form-control" id="fatorAcucar" >
+          <input type="text" class="form-control" id="fatorAcucar"formControlName="fatorAcucar" >
         </div>
         <div class="form-group col-md-3">
           <label for="rf">Rf</label>
-          <input type="text" class="form-control" id="rf" >
+          <input type="text" class="form-control" id="rf" formControlName="rf">
         </div>
         <div class="form-group col-md-3">
           <label for="acucar">Açucar</label>
-          <input type="text" class="form-control" id="acucar" >
+          <input type="text" class="form-control" id="acucar" formControlName="acucar" >
         </div>
       </div>
-      <button  class="btn btn-success">Cadastrar</button>
+      <button  class="btn btn-success"(click)="cadastrar()">Cadastrar</button>
     </form>
   </div>
 </div>
@@ -33,25 +33,25 @@
   </div>
   <div class="card-body">
     <form>
-      <div class="form-row bg-warning">
+      <div class="form-row bg-warning" *ngFor="let formula of listaFormulasResult;let i=index">
         <div class="form-group col-md-2">
           <label for="gordura1">Gordura</label>
-          <input type="text" class="form-control" id="gordura1" >
+          <input type="text" class="form-control" id="gordura1" value="{{formula.gordura}}">
         </div>
         <div class="form-group col-md-2">
           <label for="fatorAcucar1">Fator açucar</label>
-          <input type="text" class="form-control" id="fatorAcucar1" >
+          <input type="text" class="form-control" id="fatorAcucar1" value="{{formula.fatorAcucar}}" >
         </div>
         <div class="form-group col-md-2">
           <label for="rf1">Rf</label>
-          <input type="text" class="form-control" id="rf1" >
+          <input type="text" class="form-control" id="rf1" value="{{formula.rf}}" >
         </div>
         <div class="form-group col-md-2">
           <label for="acucar1">Açucar</label>
-          <input type="text" class="form-control" id="acucar1" >
+          <input type="text" class="form-control" id="acucar1" value="{{formula.acucar}}">
         </div>
         <div class="form-inline col-md-3 mt-4">
-          <button class="btn btn-danger">Excluir</button>
+          <button class="btn btn-danger" (click)="excluirFormula(i)">Excluir</button>
         </div>
       </div>
     </form>
@@ -61,22 +61,22 @@
 <ng-template #errorTemplate>
   <div class="modal-header bg-danger">
     <h4 class="modal-title pull-left">Lista de erros</h4>
-    <button type="button" class="close pull-right" aria-label="Close">
+    <button type="button" class="close pull-right" aria-label="Close" (click)="referenciaModalError.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <ul>
-      <li></li>
+      <li *ngFor="let error of referenciaModalError.content">{{error}}</li>
     </ul>
   </div>
 </ng-template>
 
 <ng-template #desejaDeletartemplate>
   <div class="modal-body text-center">
-    <p>Voce deseja realmente excluir este tanque?</p>
-    <button type="button" class="btn btn-default" >Sim</button>
-    <button type="button" class="btn btn-primary" >Não</button>
+    <p>Voce deseja realmente excluir esta formula?</p>
+    <button type="button" class="btn btn-default" (click)="confirm()" >Sim</button>
+    <button type="button" class="btn btn-primary" (click)="decline()" >Não</button>
   </div>
 </ng-template>
 

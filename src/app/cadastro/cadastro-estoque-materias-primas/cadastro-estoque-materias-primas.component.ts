@@ -89,7 +89,7 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
         if(formNome=='materiasPrimas'&&this.formularioCadastro.get(formNome)?.invalid){
           listarErrors.push('Deve haver pelo menos uma materia prima selecionada')
         }
-      })
+      });
       this.referenciaModalError.content=listarErrors;
     }
   }
