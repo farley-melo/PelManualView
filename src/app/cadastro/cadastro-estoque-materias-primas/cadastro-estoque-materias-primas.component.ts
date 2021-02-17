@@ -1,9 +1,10 @@
 import {Component, OnInit, TemplateRef, ViewChild, ViewChildren} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
-import {CarregarMateriasPrimasService} from './carregar-materias-primas.service';
+import {EstoqueMateriaPrimaService} from './estoque-materia-prima.service';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {ValidateFn} from 'codelyzer/walkerFactory/walkerFn';
-import {Tanque} from './tanque';
+import {Estoque} from './estoque';
+import {MateriaPrimaService} from '../cadastro-materias-primas/materia-prima.service';
 
 @Component({
   selector: 'app-cadastro-estoque-materias-primas',
@@ -16,17 +17,17 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
   formularioCadastro:FormGroup;
   @ViewChild('errorTemplate') errorTemplate:TemplateRef<any>;
   referenciaModalError:BsModalRef;
-  listaTanque:Tanque[]=[];
+  listaTanque:Estoque[]=[];
   @ViewChild('desejaDeletartemplate')desejaDeletartemplate:TemplateRef<any>;
   referenciaModalDeletar:BsModalRef;
   indiceParaDeleçaoTanque:number=0;
 
   constructor(private formsBuilder:FormBuilder,
-              private carregarMateriasPrimasService:CarregarMateriasPrimasService,
+              private materiaPrimaService:MateriaPrimaService,
               private modalService:BsModalService) { }
 
   ngOnInit(): void {
-    this.listaDeMateriasPrimas=this.carregarMateriasPrimasService.carregarMateriasPrimas();
+    this.listaDeMateriasPrimas=this.materiaPrimaService.carregarListaDemateriasPrimas();
     this.formularioCadastro=this.formsBuilder.group({
       nome:['',[Validators.required]],
       capacidade:['',Validators.required],
@@ -63,17 +64,17 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
   cadastrar() {
     if(this.formularioCadastro.valid){
       //cadatra o tanque no banco de dados
-      let tanque:Tanque=new Tanque();
+      let estoque:Estoque=new Estoque();
       let listaMateriaPrimaResult:string[]=[];
-      tanque.nome=this.formularioCadastro.get('nome')?.value;
-      tanque.capacidade=this.formularioCadastro.get('capacidade')?.value;
+      estoque.nome=this.formularioCadastro.get('nome')?.value;
+      estoque.capacidade=this.formularioCadastro.get('capacidade')?.value;
       for (let i=0;i<this.listaDeMateriasPrimas.length;i++){
         if(this.obterFormArray().controls[i].value==true){
           listaMateriaPrimaResult.push(this.listaDeMateriasPrimas[i]);
         }
       }
-      tanque.materiasPrimas=listaMateriaPrimaResult;
-      this.listaTanque.push(tanque);
+      estoque.materiasPrimas=listaMateriaPrimaResult;
+      this.listaTanque.push(estoque);
       this.formularioCadastro.reset();
     }else{
       this.referenciaModalError=this.modalService.show(this.errorTemplate,{class:'modal-dialog-centered'});
@@ -93,7 +94,7 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
     }
   }
 
-  excluirTanque(i: number) {
+  excluirEstoque(i: number) {
     this.indiceParaDeleçaoTanque=i;
     this.referenciaModalDeletar=this.modalService.show(this.desejaDeletartemplate,{class:'modal-dialog-centered'});
   }

@@ -3,14 +3,14 @@
     <h3 class="offset-4">Cadastro de materias primas</h3>
   </div>
   <div class="card-body">
-    <form>
+    <form [formGroup]="formularioCadastro">
       <div class="form-row">
         <div class="form-group col-md-6">
           <label for="nome">Nome</label>
           <input type="text" class="form-control" id="nome" formControlName="nome">
         </div>
       </div>
-      <button  class="btn btn-success">Cadastrar</button>
+      <button  class="btn btn-success"(click)="cadastrar()">Cadastrar</button>
     </form>
   </div>
 </div>
@@ -21,13 +21,13 @@
   </div>
   <div class="card-body">
     <form>
-      <div class="form-row bg-warning col-5">
+      <div class="form-row bg-warning col-5"*ngFor="let materiaPrima of listaMateriaPrimaResult;let i=index">
         <div class="form-group col-md-8">
           <label for="nome2">Nome</label>
-          <input type="text" class="form-control" id="nome2" >
+          <input type="text" class="form-control" id="nome2" value="{{materiaPrima.nome}}" >
         </div>
         <div class="form-inline col-md-3 mt-4">
-          <button class="btn btn-danger">Excluir</button>
+          <button class="btn btn-danger"(click)="excluirMateriaPrima(i)">Excluir</button>
         </div>
       </div>
     </form>
@@ -37,13 +37,13 @@
 <ng-template #errorTemplate>
   <div class="modal-header bg-danger">
     <h4 class="modal-title pull-left">Lista de erros</h4>
-    <button type="button" class="close pull-right" aria-label="Close">
+    <button type="button" class="close pull-right" aria-label="Close" (click)="referenciaModalError.hide()">
       <span aria-hidden="true">&times;</span>
     </button>
   </div>
   <div class="modal-body">
     <ul>
-      <li></li>
+      <li>{{referenciaModalError.content}}</li>
     </ul>
   </div>
 </ng-template>
@@ -51,8 +51,8 @@
 <ng-template #desejaDeletartemplate>
   <div class="modal-body text-center">
     <p>Voce deseja realmente excluir este tanque?</p>
-    <button type="button" class="btn btn-default"  >Sim</button>
-    <button type="button" class="btn btn-primary"  >Não</button>
+    <button type="button" class="btn btn-default" (click)="confirm()"  >Sim</button>
+    <button type="button" class="btn btn-primary" (click)="decline()"  >Não</button>
   </div>
 </ng-template>
 
