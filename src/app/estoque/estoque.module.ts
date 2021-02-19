@@ -5,6 +5,7 @@ import { EstoqueRoutingModule } from './estoque-routing.module';
 import { EstoqueComponent } from './estoque/estoque.component';
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ProgressbarModule} from 'ngx-bootstrap/progressbar';
 
 
 @NgModule({
@@ -12,7 +13,7 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
     imports: [
         CommonModule,
         EstoqueRoutingModule,
-        BsDropdownModule,FormsModule,ReactiveFormsModule
+        BsDropdownModule, FormsModule, ReactiveFormsModule, ProgressbarModule
     ]
 })
 export class EstoqueModule { }
