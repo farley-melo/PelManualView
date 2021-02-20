@@ -7,6 +7,7 @@ import {ModalModule} from 'ngx-bootstrap/modal';
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ProgressbarModule} from 'ngx-bootstrap/progressbar';
+import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import {ProgressbarModule} from 'ngx-bootstrap/progressbar';
     AppRoutingModule,ModalModule.forRoot(),
     BrowserAnimationsModule,
     BsDropdownModule.forRoot(),
-    ProgressbarModule.forRoot()
+    ProgressbarModule.forRoot(),
+    BsDatepickerModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]
