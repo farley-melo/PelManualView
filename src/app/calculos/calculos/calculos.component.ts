@@ -93,6 +93,7 @@ export class CalculosComponent implements OnInit {
 
 
 
+
   get gorduraCalculadaPre(){
     return this.preCondensadoForm.get('gorduraCalculadaPre')
   }
@@ -114,7 +115,7 @@ export class CalculosComponent implements OnInit {
     this.snfLeite?.setValue(this.calcularSnfLeiteIntegral().toFixed(2))
   }
   calcularTcLeiteIntegral():number{
-    let gordura=this.gorduraLeite?.value
+    let gordura=parseFloat(this.gorduraLeite?.value)
     let snf=this.calcularSnfLeiteIntegral()
     let tc=gordura+snf
     return tc;
@@ -123,8 +124,8 @@ export class CalculosComponent implements OnInit {
   mostrarResultadoLeiteIntegral() {
     if(this.gorduraLeite?.value!=null&&this.gorduraLeite.value!=''&&this.densidadeLeite?.value!=null&&this.densidadeLeite.value!=''){
       this.mostrarSnf()
-      let result:number=this.calcularTcLeiteIntegral()
-      this.tcLeite?.setValue(result.toFixed())
+      let result=this.calcularTcLeiteIntegral()
+      this.tcLeite?.setValue(result.toFixed(2))
     }
 
   }
@@ -195,6 +196,11 @@ export class CalculosComponent implements OnInit {
   }
 
   mostrarResultadoAcidezPre() {
+    let voluemTituladoPre=parseFloat(this.acidezPreForm.get('volumeTituladoPre')?.value)
+    let fatorCorrecao=parseFloat(this.acidezPreForm.get('fatorCorrecaoPre')?.value)
+    let tcPre=parseFloat(this.acidezPreForm.get('tcPre')?.value)
+    let result=voluemTituladoPre*10000*fatorCorrecao/(tcPre*20)
+    this.acidezPreForm.get('acidezPreResult')?.setValue(result.toFixed(2))
 
   }
 
