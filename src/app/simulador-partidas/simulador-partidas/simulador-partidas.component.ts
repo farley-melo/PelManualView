@@ -18,7 +18,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   formularioValoresInputados: FormGroup;
   formularioTotalPartidaTotalEsperado: FormGroup;
   formularioVariaves: FormGroup;
-  listaDeFormulas: Formula[];
+  listaDeFormulas: Formula[]=[];
   listaDeTanques: Tanque[];
   @ViewChild('quantidadeInput') quantidadeInput: ElementRef;
   inscricao: Subscription;
@@ -79,11 +79,17 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       fatorAcucarAtual: [],
       rfAtual: []
     });
-
+    let formula=new Formula();
+    formula.gordura='8.10'
+    formula.rf=0.403
+    formula.fa=5.5
+    formula.quantidadeDeAcucar=7500
+    this.listaDeFormulas.push(formula)
     this.escolherFormulaDeLca();
     this.calcularSnfGorduraAtual();
     this.mudarValoresEsperadosQuandoMudarValorDeAcucar();
     this.calcularSolidosTotaisDaPartida();
+
   }
 
 

@@ -47,24 +47,24 @@
                 </select>
               </td>
               <td>
-                <input type="text" formControlName="materiaPrima" class="inputMateriaPrima bg-info" readonly>
+                <input type="text" formControlName="materiaPrima" class="inputMateriaPrima bg-info" >
               </td>
 
               <td>
-                <input class="bg-info" formControlName="codigoPel" readonly>
+                <input class="bg-info" formControlName="codigoPel" >
               </td>
               <td>
-                <input class="bg-info" formControlName="densidade" readonly>
+                <input class="bg-info" formControlName="densidade" >
               </td>
 
-              <td><input formControlName="totalMateriaPrimaNoTanque" readonly class="bg-info"></td>
-              <td><input formControlName="analiseGordura" readonly class="bg-info"></td>
-              <td><input formControlName="analiseSnf" readonly class="bg-info"></td>
+              <td><input formControlName="totalMateriaPrimaNoTanque"  class="bg-info"></td>
+              <td><input formControlName="analiseGordura"  class="bg-info"></td>
+              <td><input formControlName="analiseSnf"  class="bg-info"></td>
               <td><input formControlName="quantidade" (input)="atualizarDadosFormulario(i)"
                          (focus)="atualizarDadosFormulario(i)" #quantidadeInput
                          (click)="mostraMensagemDeInserirFormula()"></td>
-              <td><input formControlName="kgGordura" readonly class="bg-info"></td>
-              <td><input formControlName="kgSnf" readonly class="bg-info"></td>
+              <td><input formControlName="kgGordura"  class="bg-info"></td>
+              <td><input formControlName="kgSnf"  class="bg-info"></td>
               <td class="d-inline-block">
                 <input class="buttonSmall btn btn-success" type="button" value="+" #botaoAdicionar
                        (click)="adicionarNovaLinha()" *ngIf="formArray.controls[i].get('quantidade')?.valid">
@@ -135,12 +135,12 @@
               <option *ngFor="let formula of listaDeFormulas" [ngValue]="formula">{{formula.gordura}}%</option>
             </select>
           </td>
-          <td><input formControlName="fatorAcucar" readonly class="bg-info "></td>
-          <td><input formControlName="rf" readonly class="bg-info inputEstatistica"></td>
+          <td><input formControlName="fatorAcucar"  class="bg-info "></td>
+          <td><input formControlName="rf"  class="bg-info inputEstatistica"></td>
           <td><input formControlName="acucar" class="inputEstatistica "></td>
-          <td><input formControlName="tf" readonly class="bg-danger inputEstatistica"></td>
-          <td><input formControlName="fatorAcucarAtual" readonly class="bg-danger inputEstatistica "></td>
-          <td><input formControlName="rfAtual" readonly class="bg-danger inputEstatistica "></td>
+          <td><input formControlName="tf"  class="bg-danger inputEstatistica"></td>
+          <td><input formControlName="fatorAcucarAtual"  class="bg-danger inputEstatistica "></td>
+          <td><input formControlName="rfAtual"  class="bg-danger inputEstatistica "></td>
         </tr>
         </tbody>
       </table>
