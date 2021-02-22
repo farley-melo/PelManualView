@@ -6,6 +6,7 @@ import {take} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 import {Tanque} from '../../entidades/tanque';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
+import {AutoCalcularPartidaService} from './auto-calcular-partida.service';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   formularioValoresInputados: FormGroup;
   formularioTotalPartidaTotalEsperado: FormGroup;
   formularioVariaves: FormGroup;
-  listaDeFormulas: Formula[]=[];
+  listaDeFormulas: Formula[] = [];
   listaDeTanques: Tanque[];
   @ViewChild('quantidadeInput') quantidadeInput: ElementRef;
   inscricao: Subscription;
@@ -32,15 +33,13 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   static indice: number = 0;
 
 
-
-
-
   constructor(private formBuilder: FormBuilder,
               private renderer: Renderer2,
               private activeRoute: ActivatedRoute,
               private modalService: BsModalService,
-             // private tanqueService: TanqueService,//criar servico temporario
-              private router: Router) {
+              // private tanqueService: TanqueService,//criar servico temporario
+              private router: Router,
+              private autoCalcularService:AutoCalcularPartidaService) {
   }
 
   ngOnDestroy(): void {
@@ -79,21 +78,18 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       fatorAcucarAtual: [],
       rfAtual: []
     });
-    let formula=new Formula();
-    formula.gordura='8.10'
-    formula.rf=0.403
-    formula.fa=5.5
-    formula.quantidadeDeAcucar=7500
-    this.listaDeFormulas.push(formula)
+    let formula = new Formula();
+    formula.gordura = '8.10';
+    formula.rf = 0.403;
+    formula.fa = 5.5;
+    formula.quantidadeDeAcucar = 7500;
+    this.listaDeFormulas.push(formula);
     this.escolherFormulaDeLca();
     this.calcularSnfGorduraAtual();
     this.mudarValoresEsperadosQuandoMudarValorDeAcucar();
     this.calcularSolidosTotaisDaPartida();
 
   }
-
-
-
 
 
   get formArray(): FormArray {
@@ -106,8 +102,8 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       //controles do formulario
       tanque: [],
       materiaPrima: [],
-      codigoPel:[],
-      densidade:[],
+      codigoPel: [],
+      densidade: [],
       totalMateriaPrimaNoTanque: [],
       analiseGordura: [],
       analiseSnf: [],
@@ -230,7 +226,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.setValue(parseFloat((gorduraEsperada / rf).toFixed(2)));
   }
 
-  mostrarTf() {
+  mostrarTf(): number {
     let totalGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalGordura')?.value);
 
     let totalSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalSnf')?.value);
@@ -242,6 +238,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     let variavel2 = (totalPartida + acucar);
     let tf: number = (variavel1 / variavel2) * 100;
     this.formularioVariaves.get('tf')?.setValue(tf.toFixed(2));
+    return tf;
   }
 
   escolherFormulaDeLca() {
@@ -252,6 +249,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       rf?.setValue(formula.rf);
       fa?.setValue(formula.fa);
       acucar?.setValue(formula.quantidadeDeAcucar);
+      this.quantidadeInput.nativeElement.focus();
       this.mudarTotalEsperadoQuandoMudarAFormula();
     });
   }
@@ -262,7 +260,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     });
   }
 
-  compararFormulas(obj1:any, obj2:any) {
+  compararFormulas(obj1: any, obj2: any) {
     return obj1 && obj2 ? (obj1.gordura === obj2.gordura) : obj1 === obj2;
   }
 
@@ -270,9 +268,6 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   openModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, {class: 'modal-dialog-centered'});
   }
-
-
-
 
 
   atualizarIndice(i: number) {
@@ -289,7 +284,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
 
 
   calcularSnfGorduraAtual() {
-     this.formularioVariaves.get('formulas')?.valueChanges.subscribe((formula: Formula) => {
+    this.formularioVariaves.get('formulas')?.valueChanges.subscribe((formula: Formula) => {
       this.formularioTotalPartidaTotalEsperado.get('totalGordura')?.valueChanges.subscribe(gorduraTotal => {
         let fatorAcucar = (this.formularioVariaves.get('acucar')?.value / gorduraTotal).toFixed(2);
         this.formularioVariaves.get('fatorAcucarAtual')?.setValue(fatorAcucar);
@@ -363,4 +358,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     this.formularioEstatisticoPartida.get('acucarDaPartida')?.setValue(result.toFixed(2));
   }
 
+  autoCalcular() {
+    this.autoCalcularService.autoCalcular()
+  }
 }

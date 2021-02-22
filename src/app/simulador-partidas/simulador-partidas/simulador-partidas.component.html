@@ -62,7 +62,8 @@
               <td><input formControlName="analiseSnf"  class="bg-info"></td>
               <td><input formControlName="quantidade" (input)="atualizarDadosFormulario(i)"
                          (focus)="atualizarDadosFormulario(i)" #quantidadeInput
-                         (click)="mostraMensagemDeInserirFormula()"></td>
+                         (click)="mostraMensagemDeInserirFormula()"
+                         (change)="atualizarDadosFormulario(i)"></td>
               <td><input formControlName="kgGordura"  class="bg-info"></td>
               <td><input formControlName="kgSnf"  class="bg-info"></td>
               <td class="d-inline-block">
@@ -75,6 +76,7 @@
             </tr>
             </tbody>
           </table>
+          <button class="btn btn-success" (click)="autoCalcular()">auto calcular</button>
         </div>
       </div>
     </form>
