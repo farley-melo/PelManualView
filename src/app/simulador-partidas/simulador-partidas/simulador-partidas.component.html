@@ -40,24 +40,20 @@
             <tbody formArrayName="linhas">
             <tr *ngFor="let itemLinha of formArray.controls;let i=index;let l=last" [formGroupName]="i">
               <td>
-                <select formControlName="tanque" class="bg-info"
-                        (click)="atualizarIndice(i)">
-                  <option *ngFor="let tanque of listaDeTanques;let indice=index"
-                          [ngValue]="tanque">{{tanque.nome}}</option>
-                </select>
+
               </td>
               <td>
-                <input type="text" formControlName="materiaPrima" class="inputMateriaPrima bg-info" >
+
               </td>
 
               <td>
-                <input class="bg-info" formControlName="codigoPel" >
+
               </td>
               <td>
-                <input class="bg-info" formControlName="densidade" >
+
               </td>
 
-              <td><input formControlName="totalMateriaPrimaNoTanque"  class="bg-info"></td>
+              <td></td>
               <td><input formControlName="analiseGordura"  class="bg-info"></td>
               <td><input formControlName="analiseSnf"  class="bg-info"></td>
               <td><input formControlName="quantidade" (input)="atualizarDadosFormulario(i)"
@@ -125,6 +121,7 @@
           <th scope="col">Fator açucar objetivo</th>
           <th scope="col">RF objetivo</th>
           <th scope="col">Açucar</th>
+          <th scope="col">Tf objetivo</th>
           <th scope="col">TF</th>
           <th scope="col">Fator açucar atual</th>
           <th scope="col">RF atual</th>
@@ -140,6 +137,7 @@
           <td><input formControlName="fatorAcucar"  class="bg-info "></td>
           <td><input formControlName="rf"  class="bg-info inputEstatistica"></td>
           <td><input formControlName="acucar" class="inputEstatistica "></td>
+          <td><input formControlName="tfObjetivo" class="inputEstatistica"></td>
           <td><input formControlName="tf"  class="bg-danger inputEstatistica"></td>
           <td><input formControlName="fatorAcucarAtual"  class="bg-danger inputEstatistica "></td>
           <td><input formControlName="rfAtual"  class="bg-danger inputEstatistica "></td>

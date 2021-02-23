@@ -39,7 +39,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
               private modalService: BsModalService,
               // private tanqueService: TanqueService,//criar servico temporario
               private router: Router,
-              private autoCalcularService:AutoCalcularPartidaService) {
+              private autoCalcularService: AutoCalcularPartidaService) {
   }
 
   ngOnDestroy(): void {
@@ -71,6 +71,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     });
     this.formularioVariaves = this.formBuilder.group({
       tf: [],
+      tfObjetivo:[0],
       fatorAcucar: [],
       rf: [],
       acucar: [0],
@@ -83,6 +84,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     formula.rf = 0.403;
     formula.fa = 5.5;
     formula.quantidadeDeAcucar = 7500;
+    formula.tfObjetivo=44.2
     this.listaDeFormulas.push(formula);
     this.escolherFormulaDeLca();
     this.calcularSnfGorduraAtual();
@@ -100,11 +102,6 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   iniciarLinhas(): FormGroup {
     return this.formBuilder.group({
       //controles do formulario
-      tanque: [],
-      materiaPrima: [],
-      codigoPel: [],
-      densidade: [],
-      totalMateriaPrimaNoTanque: [],
       analiseGordura: [],
       analiseSnf: [],
       quantidade: [],
@@ -246,8 +243,10 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       let rf = this.formularioVariaves.get('rf');
       let fa = this.formularioVariaves.get('fatorAcucar');
       let acucar = this.formularioVariaves.get('acucar');
+      let tfObjetivo=this.formularioVariaves.get('tfObjetivo')
       rf?.setValue(formula.rf);
       fa?.setValue(formula.fa);
+      tfObjetivo?.setValue(formula.tfObjetivo)
       acucar?.setValue(formula.quantidadeDeAcucar);
       this.quantidadeInput.nativeElement.focus();
       this.mudarTotalEsperadoQuandoMudarAFormula();
@@ -359,6 +358,30 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   }
 
   autoCalcular() {
+    // let leite = this.formArray.controls[0];
+    // let analiseGorduraLeite = parseFloat(leite.get('analiseGordura')?.value);
+    // let analiseSnfLeite = parseFloat(leite.get('analiseSnf')?.value);
+    //
+    // let preCondensadoIntegral = this.formArray.controls[1];
+    // let analiseGorduraPreIntegral = parseFloat(preCondensadoIntegral.get('analiseGordura')?.value);
+    // let analiseSnfLeitePreIntegral = parseFloat(preCondensadoIntegral.get('analiseSnf')?.value);
+    //
+    // let preCondensadoDesnatado = this.formArray.controls[2];
+    // let analiseGorduraPreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseGordura')?.value);
+    // let analiseSnfLeitePreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseSnf')?.value);
+    //
+    // let butterOil = this.formArray.controls[3];
+    // let analiseGorduraButterOil = parseFloat(butterOil.get('analiseGordura')?.value);
+    // let analiseSnfButterOil = parseFloat(butterOil.get('analiseSnf')?.value);
+    //
+    // let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
+    // let tfObjetivo=parseFloat(this.formularioVariaves.get('tfObjetivo')?.value)
+    // let totalEsperadoGordura = this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value;
+    // let totalEsperadoSnf = this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value;
+
+
+
     this.autoCalcularService.autoCalcular()
+
   }
 }
