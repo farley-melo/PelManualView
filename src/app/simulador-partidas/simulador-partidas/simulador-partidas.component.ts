@@ -85,7 +85,14 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     formula.fa = 5.5;
     formula.quantidadeDeAcucar = 7500;
     formula.tfObjetivo=44.2
+    let formula2=new Formula()
+    formula2.gordura = '4';
+    formula2.rf = 0.202;
+    formula2.fa = 11.77;
+    formula2.quantidadeDeAcucar = 8200;
+    formula2.tfObjetivo=44.2
     this.listaDeFormulas.push(formula);
+    this.listaDeFormulas.push(formula2);
     this.escolherFormulaDeLca();
     this.calcularSnfGorduraAtual();
     this.mudarValoresEsperadosQuandoMudarValorDeAcucar();
@@ -358,30 +365,51 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   }
 
   autoCalcular() {
-    // let leite = this.formArray.controls[0];
-    // let analiseGorduraLeite = parseFloat(leite.get('analiseGordura')?.value);
-    // let analiseSnfLeite = parseFloat(leite.get('analiseSnf')?.value);
-    //
-    // let preCondensadoIntegral = this.formArray.controls[1];
-    // let analiseGorduraPreIntegral = parseFloat(preCondensadoIntegral.get('analiseGordura')?.value);
-    // let analiseSnfLeitePreIntegral = parseFloat(preCondensadoIntegral.get('analiseSnf')?.value);
-    //
-    // let preCondensadoDesnatado = this.formArray.controls[2];
-    // let analiseGorduraPreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseGordura')?.value);
-    // let analiseSnfLeitePreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseSnf')?.value);
-    //
-    // let butterOil = this.formArray.controls[3];
-    // let analiseGorduraButterOil = parseFloat(butterOil.get('analiseGordura')?.value);
-    // let analiseSnfButterOil = parseFloat(butterOil.get('analiseSnf')?.value);
-    //
-    // let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
-    // let tfObjetivo=parseFloat(this.formularioVariaves.get('tfObjetivo')?.value)
-    // let totalEsperadoGordura = this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value;
-    // let totalEsperadoSnf = this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value;
+    let leite = this.formArray.controls[0];
+    let analiseGorduraLeite = parseFloat(leite.get('analiseGordura')?.value);
+    let analiseSnfLeite = parseFloat(leite.get('analiseSnf')?.value);
 
+    let preCondensadoIntegral = this.formArray.controls[1];
+    let analiseGorduraPreIntegral = parseFloat(preCondensadoIntegral.get('analiseGordura')?.value);
+    let analiseSnfLeitePreIntegral = parseFloat(preCondensadoIntegral.get('analiseSnf')?.value);
 
+    let preCondensadoDesnatado = this.formArray.controls[2];
+    let analiseGorduraPreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseGordura')?.value);
+    let analiseSnfLeitePreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseSnf')?.value);
 
-    this.autoCalcularService.autoCalcular()
+    let butterOil = this.formArray.controls[3];
+    let analiseGorduraButterOil = parseFloat(butterOil.get('analiseGordura')?.value);
+    let analiseSnfButterOil = parseFloat(butterOil.get('analiseSnf')?.value);
+
+    let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
+    let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value)
+    let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value)
+    let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value)
+    let rfEsperado = parseFloat(this.formularioVariaves.get('rf')?.value)
+    let fatorAcucarEsperado = parseFloat(this.formularioVariaves.get('fatorAcucar')?.value)
+
+  let result=this.autoCalcularService.autoCalcular(
+      acucar,
+      totalEsperadoGordura,
+      totalEsperadoSnf,
+      rfEsperado,
+      fatorAcucarEsperado,
+      tfObjetivo,
+      analiseGorduraLeite,
+      analiseSnfLeite,
+      analiseGorduraPreIntegral,
+      analiseSnfLeitePreIntegral,
+      analiseGorduraPreDesnatado,
+      analiseSnfLeitePreDesnatado,
+      analiseGorduraButterOil)
+      leite.patchValue({quantidade:result.leite})
+      this.atualizarDadosFormulario(0)
+      preCondensadoIntegral.patchValue({quantidade:result.preIntegral})
+      this.atualizarDadosFormulario(1)
+      preCondensadoDesnatado.patchValue({quantidade:result.preDesnatado})
+      this.atualizarDadosFormulario(2)
+      butterOil.patchValue({quantidade:result.butterOil})
+      this.atualizarDadosFormulario(3)
 
   }
 }
