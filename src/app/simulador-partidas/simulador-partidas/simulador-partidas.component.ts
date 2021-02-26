@@ -71,7 +71,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     });
     this.formularioVariaves = this.formBuilder.group({
       tf: [],
-      tfObjetivo:[0],
+      tfObjetivo: [0],
       fatorAcucar: [],
       rf: [],
       acucar: [0],
@@ -84,13 +84,13 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     formula.rf = 0.403;
     formula.fa = 5.5;
     formula.quantidadeDeAcucar = 7500;
-    formula.tfObjetivo=44.2
-    let formula2=new Formula()
+    formula.tfObjetivo = 44.2;
+    let formula2 = new Formula();
     formula2.gordura = '4';
     formula2.rf = 0.202;
     formula2.fa = 11.77;
     formula2.quantidadeDeAcucar = 8200;
-    formula2.tfObjetivo=44.2
+    formula2.tfObjetivo = 44.2;
     this.listaDeFormulas.push(formula);
     this.listaDeFormulas.push(formula2);
     this.escolherFormulaDeLca();
@@ -250,10 +250,10 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       let rf = this.formularioVariaves.get('rf');
       let fa = this.formularioVariaves.get('fatorAcucar');
       let acucar = this.formularioVariaves.get('acucar');
-      let tfObjetivo=this.formularioVariaves.get('tfObjetivo')
+      let tfObjetivo = this.formularioVariaves.get('tfObjetivo');
       rf?.setValue(formula.rf);
       fa?.setValue(formula.fa);
-      tfObjetivo?.setValue(formula.tfObjetivo)
+      tfObjetivo?.setValue(formula.tfObjetivo);
       acucar?.setValue(formula.quantidadeDeAcucar);
       this.quantidadeInput.nativeElement.focus();
       this.mudarTotalEsperadoQuandoMudarAFormula();
@@ -364,7 +364,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     this.formularioEstatisticoPartida.get('acucarDaPartida')?.setValue(result.toFixed(2));
   }
 
-  autoCalcular() {
+  autoCalcularComLactose() {
     let leite = this.formArray.controls[0];
     let analiseGorduraLeite = parseFloat(leite.get('analiseGordura')?.value);
     let analiseSnfLeite = parseFloat(leite.get('analiseSnf')?.value);
@@ -386,38 +386,12 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     let analiseSnfLactose = parseFloat(lactose.get('analiseSnf')?.value);
 
     let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
-    let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value)
-    let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value)
-    let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value)
-    let rfEsperado = parseFloat(this.formularioVariaves.get('rf')?.value)
-    let fatorAcucarEsperado = parseFloat(this.formularioVariaves.get('fatorAcucar')?.value)
-/*
-  let result=this.autoCalcularService.autoCalcularComLactose(
-     7500,
-      1363.64,
-      3383.72,
-      0.403,
-      5.5,
-      44.2,
-      3.57,
-      8.74,
-      11,
-      31.25,
-      0.17,
-      33.7,
-      99.92,0,99.3)*/
-     /* leite.patchValue({quantidade:result.leite})
-      this.atualizarDadosFormulario(0)
-      preCondensadoIntegral.patchValue({quantidade:result.preIntegral})
-      this.atualizarDadosFormulario(1)
-      preCondensadoDesnatado.patchValue({quantidade:result.preDesnatado})
-      this.atualizarDadosFormulario(2)
-      butterOil.patchValue({quantidade:result.butterOil})
-      this.atualizarDadosFormulario(3)
-      lactose.patchValue({quantidade:result.lactose})
-      this.atualizarDadosFormulario(4)*/
-   // console.log(result)
-    let result=this.autoCalcularService.autoCalcularComLactose(
+    let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value);
+    let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value);
+    let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value);
+    let rfEsperado = parseFloat(this.formularioVariaves.get('rf')?.value);
+    let fatorAcucarEsperado = parseFloat(this.formularioVariaves.get('fatorAcucar')?.value);
+    let result = this.autoCalcularService.autoCalcularComLactose(
       analiseGorduraLeite,
       analiseSnfLeite,
       analiseGorduraPreIntegral,
@@ -433,17 +407,66 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       totalEsperadoSnf,
       rfEsperado,
       fatorAcucarEsperado,
-      tfObjetivo)
-    leite.patchValue({quantidade:result.leite})
-    this.atualizarDadosFormulario(0)
-    preCondensadoIntegral.patchValue({quantidade:result.preIntegral})
-    this.atualizarDadosFormulario(1)
-    preCondensadoDesnatado.patchValue({quantidade:result.preDesnatado})
-    this.atualizarDadosFormulario(2)
-    butterOil.patchValue({quantidade:result.butterOil})
-    this.atualizarDadosFormulario(3)
-    lactose.patchValue({quantidade:result.lactose})
-    this.atualizarDadosFormulario(4)
+      tfObjetivo);
+    leite.patchValue({quantidade: result.leite});
+    this.atualizarDadosFormulario(0);
+    preCondensadoIntegral.patchValue({quantidade: result.preIntegral});
+    this.atualizarDadosFormulario(1);
+    preCondensadoDesnatado.patchValue({quantidade: result.preDesnatado});
+    this.atualizarDadosFormulario(2);
+    butterOil.patchValue({quantidade: result.butterOil});
+    this.atualizarDadosFormulario(3);
+    lactose.patchValue({quantidade: result.lactose});
+    this.atualizarDadosFormulario(4);
+  }
 
+  autoCalcularSemComLactose() {
+    let leite = this.formArray.controls[0];
+    let analiseGorduraLeite = parseFloat(leite.get('analiseGordura')?.value);
+    let analiseSnfLeite = parseFloat(leite.get('analiseSnf')?.value);
+
+    let preCondensadoIntegral = this.formArray.controls[1];
+    let analiseGorduraPreIntegral = parseFloat(preCondensadoIntegral.get('analiseGordura')?.value);
+    let analiseSnfLeitePreIntegral = parseFloat(preCondensadoIntegral.get('analiseSnf')?.value);
+
+    let preCondensadoDesnatado = this.formArray.controls[2];
+    let analiseGorduraPreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseGordura')?.value);
+    let analiseSnfLeitePreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseSnf')?.value);
+
+    let butterOil = this.formArray.controls[3];
+    let analiseGorduraButterOil = parseFloat(butterOil.get('analiseGordura')?.value);
+    let analiseSnfButterOil = parseFloat(butterOil.get('analiseSnf')?.value);
+
+
+    let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
+    let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value);
+    let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value);
+    let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value);
+    let rfEsperado = parseFloat(this.formularioVariaves.get('rf')?.value);
+    let fatorAcucarEsperado = parseFloat(this.formularioVariaves.get('fatorAcucar')?.value);
+    let result = this.autoCalcularService.autoCalcularSemLactose(
+      acucar,
+      totalEsperadoGordura,
+      totalEsperadoSnf,
+      rfEsperado,
+      fatorAcucarEsperado,
+      tfObjetivo,
+      analiseGorduraLeite,
+      analiseSnfLeite,
+      analiseGorduraPreIntegral,
+      analiseSnfLeitePreIntegral,
+      analiseGorduraPreDesnatado,
+      analiseSnfLeitePreDesnatado,
+      analiseGorduraButterOil,
+      analiseSnfButterOil
+    );
+    leite.patchValue({quantidade: result.leite});
+    this.atualizarDadosFormulario(0);
+    preCondensadoIntegral.patchValue({quantidade: result.preIntegral});
+    this.atualizarDadosFormulario(1);
+    preCondensadoDesnatado.patchValue({quantidade: result.preDesnatado});
+    this.atualizarDadosFormulario(2);
+    butterOil.patchValue({quantidade: result.butterOil});
+    this.atualizarDadosFormulario(3);
   }
 }

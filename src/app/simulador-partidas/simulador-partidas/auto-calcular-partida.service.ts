@@ -17,7 +17,7 @@ export class AutoCalcularPartidaService {
                       snfPreIntegral: number,
                       gorduraPreDesnatado:number,
                       snfPreDesnatado:number,
-                      gorduraButterOil:number) {
+                      gorduraButterOil:number, snfButterOil:number) {
     let rfAtual=0
     let fatorAcucarAtual=0
 
@@ -26,7 +26,7 @@ export class AutoCalcularPartidaService {
     let totalSnfLeite = 0
 
     let quantiddaePreIntegral = 0;
-    let totalGorduraPreIntegral = 0
+    let totalGorduraPreIntegral =0
     let totalSnfPreIntegral =0
 
     let quantidadePreDesnatado = 0;
@@ -34,8 +34,8 @@ export class AutoCalcularPartidaService {
     let totalSnfPreDesnatado = 0
 
     let quantidadeButterOil = 0;
-    let totalGorduraButterOil = 0
-    let totalSnfButterOil = 0;
+    let totalGorduraButterOil = this.calcularGordura(gorduraButterOil,quantidadeButterOil)
+    let totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
 
     let totalSnf = 0
     let totalGordura = 0
@@ -89,7 +89,7 @@ export class AutoCalcularPartidaService {
         }
       }
       if(tfAtual < tfEsperado) {
-        while (tfAtual < tfEsperado) {
+        while (tfAtual < tfEsperado&&quantidadeLeite>=0) {
           quantidadeLeite--;
           totalGorduraLeite = this.calcularGordura(gorduraLeiteIntegral, quantidadeLeite);
           totalSnfLeite = this.calcularSnf(snfLeiteIntegral, quantidadeLeite);
@@ -148,7 +148,7 @@ export class AutoCalcularPartidaService {
         while (totalGordura < esperadoGordura) {
           quantidadeButterOil++;
           totalGorduraButterOil = this.calcularGordura(gorduraButterOil, quantidadeButterOil);
-          totalSnfButterOil = 0;
+          totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
           totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
           totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
           totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
@@ -165,10 +165,10 @@ export class AutoCalcularPartidaService {
 
       //se a gordura estiver mais alta que o desejado e estiver usando butter oil retirar butter oil ate a gordura atingir o desejado
       if (totalGordura > esperadoGordura && quantidadeButterOil > 0) {
-        while (totalGordura > esperadoGordura) {
+        while (totalGordura > esperadoGordura&&quantidadeButterOil>0) {
           quantidadeButterOil--;
           totalGorduraButterOil = this.calcularGordura(gorduraButterOil, quantidadeButterOil);
-          totalSnfButterOil = 0;
+          totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
           totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
           totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
           totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
@@ -182,7 +182,7 @@ export class AutoCalcularPartidaService {
       }
       //se o snf estiver mais alto que o snf desejado e estiver usando pre desnatado retirar o pre desnatado ate o snf atingir o desejado
       if (totalSnf > esperadoSnf && quantidadePreDesnatado > 0) {
-        while (totalSnf > esperadoSnf) {
+        while (totalSnf > esperadoSnf&&quantidadePreDesnatado>=0) {
           quantidadePreDesnatado--;
           totalGorduraPreDesnatado = this.calcularGordura(gorduraPreDesnatado, quantidadePreDesnatado);
           totalSnfPreDesnatado = this.calcularSnf(snfPreDesnatado, quantidadePreDesnatado);
@@ -201,7 +201,7 @@ export class AutoCalcularPartidaService {
       }
       //se o a gordura e o snf estiverem altos retirar pre integral ate atingir o snf objetivo
       if (totalGordura > esperadoGordura && totalSnf > esperadoSnf) {
-        while (totalSnf > esperadoSnf) {
+        while (totalSnf > esperadoSnf&&quantiddaePreIntegral>=0) {
           quantiddaePreIntegral--;
           totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
           totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
@@ -220,7 +220,7 @@ export class AutoCalcularPartidaService {
       }
       //se o snf estiver alto e nao estiver usando pre desnatado retirar pre integral ate snf atingir o objetivo
       if (totalSnf > esperadoSnf && quantidadePreDesnatado == 0) {
-        while (totalSnf > esperadoSnf) {
+        while (totalSnf > esperadoSnf&&quantidadePreDesnatado>=0) {
           quantiddaePreIntegral--;
           totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
           totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
@@ -238,7 +238,7 @@ export class AutoCalcularPartidaService {
 
       }
       if (totalGordura > esperadoGordura && quantidadeButterOil == 0) {
-        while (totalGordura > esperadoGordura) {
+        while (totalGordura > esperadoGordura&&quantiddaePreIntegral>=0) {
           quantiddaePreIntegral--;
           totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
           totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
@@ -514,15 +514,8 @@ export class AutoCalcularPartidaService {
 
       }
     }
-    setTimeout(()=>{
-      alert('nao foi possivel calcular tente fazer manualmente')
-      return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-    },10000)
     return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
   }
-
-
-
 
   private calcularTf(gorduraTotal: number, snfTotal: number, acucarTotal: number, partidaTotal: number) {
     let totalGordura = gorduraTotal;
