@@ -73,8 +73,8 @@
             </tbody>
           </table>
         </div>
-        <button class="btn btn-success " (click)="autoCalcularComLactose()">lactose</button>
-        <button class="btn btn-success " (click)="autoCalcularSemComLactose()">sem lactose</button>
+        <button class="btn btn-success ">lactose</button>
+        <button class="btn btn-success " (click)="autoCalcularLightSemLactose()">Light</button>
       </div>
     </form>
     <form [formGroup]="formularioTotalPartidaTotalEsperado">
@@ -132,7 +132,7 @@
         <tr>
           <td>
             <select formControlName="formulas" [compareWith]="compararFormulas" class="bg-info">
-              <option *ngFor="let formula of listaDeFormulas" [ngValue]="formula">{{formula.gordura}}%</option>
+              <option *ngFor="let formula of listaDeFormulas" [ngValue]="formula">{{formula.gordura}}</option>
             </select>
           </td>
           <td><input formControlName="fatorAcucar"  class="bg-info "></td>

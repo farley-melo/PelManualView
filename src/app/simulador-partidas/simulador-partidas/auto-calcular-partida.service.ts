@@ -4,517 +4,213 @@ import {Injectable} from '@angular/core';
   providedIn: 'root'
 })
 export class AutoCalcularPartidaService {
+  rfAtual = 0;
+  fatorAcucarAtual = 0;
+  quantidadeDeTentativas = 0;
 
-  public autoCalcularSemLactose(acucar:number,
-                      esperadoGordura:number,
-                      esperadoSnf:number,
-                      rfEsperado:number,
-                      fatorAcucarEsperador:number,
-                      tfEsperado:number,
-                      gorduraLeiteIntegral:number,
-                      snfLeiteIntegral:number,
-                      gorduraPreIntegral: number,
-                      snfPreIntegral: number,
-                      gorduraPreDesnatado:number,
-                      snfPreDesnatado:number,
-                      gorduraButterOil:number, snfButterOil:number) {
-    let rfAtual=0
-    let fatorAcucarAtual=0
+  quantidadeAgua = 0;
+  totalGorduraAgua = 0;
+  totalSnfAgua = 0;
 
-    let quantidadeLeite = 0;
-    let totalGorduraLeite = 0
-    let totalSnfLeite = 0
+  quantidadePreIntegral = 0;
+  totalGorduraPreIntegral = 0;
+  totalSnfPreIntegral = 0;
 
-    let quantiddaePreIntegral = 0;
-    let totalGorduraPreIntegral =0
-    let totalSnfPreIntegral =0
+  quantidadePreDesnatado = 0;
+  totalGorduraPreDesnatado = 0;
+  totalSnfPreDesnatado = 0;
 
-    let quantidadePreDesnatado = 0;
-    let totalGorduraPreDesnatado = 0
-    let totalSnfPreDesnatado = 0
+  quantidadeButterOil = 0;
+  totalGorduraButterOil = 0;
+  totalSnfButterOil = 0;
 
-    let quantidadeButterOil = 0;
-    let totalGorduraButterOil = this.calcularGordura(gorduraButterOil,quantidadeButterOil)
-    let totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
+  totalSnf = 0;
+  totalGordura = 0;
 
-    let totalSnf = 0
-    let totalGordura = 0
+  totalPartida = 0;
 
-    let totalPartida = 0
+  tfAtual = 100;
 
-    let tfAtual = 0
-    //1 acrescentar leite ate ajustar o snf objetivo
-    while (tfAtual > tfEsperado) {
-      quantidadeLeite++;
-      totalGorduraLeite = this.calcularGordura(gorduraLeiteIntegral, quantidadeLeite);
-      totalSnfLeite = this.calcularSnf(snfLeiteIntegral, quantidadeLeite);
-      totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-      totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-      totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-      tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-      rfAtual=parseFloat(this.calcularRf(acucar,totalSnf))
-      fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
+  public autoCalcularLight(acucar: number,
+                           esperadoGordura: number,
+                           esperadoSnf: number,
+                           tfEsperado: number,
+                           fatorAcucarMinimo: number,
+                           fatorAcucarMaximo: number,
+                           rfMinimo: number,
+                           rfMaximo: number,
+                           gorduraPreDesnatado: number,
+                           snfPreDesnatado: number,
+                           gorduraAgua: number,
+                           snfAgua: number,
+                           gorduraButterOil: number, snfButterOil: number) {
 
+    let fatorAcucarRange = this.definirRange(fatorAcucarMinimo, fatorAcucarMaximo);
+    let rfRange = this.definirRange(rfMinimo, rfMaximo);
+
+    this.correcoesIniciais(tfEsperado, snfAgua, gorduraAgua, acucar, esperadoSnf, snfPreDesnatado, gorduraPreDesnatado);
+
+    while (!(fatorAcucarRange.includes(this.fatorAcucarAtual) && rfRange.includes(this.rfAtual) && this.tfAtual == tfEsperado)) {
+      this.quantidadeDeTentativas += 1;
+      if (this.quantidadeDeTentativas > 1000) {
+        alert('nao foi possivel calcular tente ajustar manualmente ou acrescente outra materia prima');
+        this.resetarValores()
+        break;
+      }
+      this.corrigirTf(tfEsperado, snfAgua, gorduraAgua, acucar);
+      this.corrigirSnf(esperadoSnf, snfPreDesnatado, gorduraPreDesnatado, acucar);
+      this.corrigirGordura(esperadoGordura, snfPreDesnatado, gorduraPreDesnatado, acucar, snfButterOil, gorduraButterOil);
     }
 
-    //Acrescente pre integral ate atingir o snf objetivo
-    while (esperadoSnf > totalSnf) {
-      quantiddaePreIntegral++;
-      totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-      totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-      totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-      totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-      totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-      tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-      rfAtual=parseFloat(this.calcularRf(acucar,totalSnf))
-      fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-    }
-
-
-    while ((rfAtual != rfEsperado) || (tfAtual != tfEsperado)||(fatorAcucarAtual!=fatorAcucarEsperador)) {
-      if(tfAtual > tfEsperado) {
-        while (tfAtual > tfEsperado) {
-          quantidadeLeite++;
-          totalGorduraLeite = this.calcularGordura(gorduraLeiteIntegral, quantidadeLeite);
-          totalSnfLeite = this.calcularSnf(snfLeiteIntegral, quantidadeLeite);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-      }
-      if(tfAtual < tfEsperado) {
-        while (tfAtual < tfEsperado&&quantidadeLeite>=0) {
-          quantidadeLeite--;
-          totalGorduraLeite = this.calcularGordura(gorduraLeiteIntegral, quantidadeLeite);
-          totalSnfLeite = this.calcularSnf(snfLeiteIntegral, quantidadeLeite);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-
-      }
-      //loop auto ajuste
-      //se o snf e a gordura estiverem abaixo do desejado aumentar  o pre integral ate o total de snf atingir o desejado de snf
-      if (totalSnf < esperadoSnf && totalGordura < esperadoGordura) {
-        while (totalSnf < esperadoSnf) {
-          quantiddaePreIntegral++;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-      }
-      //se somente o  snf estiver abaixo do desejado aumentar o pre desnatado ate o snf atingir o desejado
-      if (totalSnf < esperadoSnf) {
-        while (totalSnf < esperadoSnf) {
-          quantidadePreDesnatado++;
-          totalGorduraPreDesnatado = this.calcularGordura(gorduraPreDesnatado, quantidadePreDesnatado);
-          totalSnfPreDesnatado = this.calcularSnf(snfPreDesnatado, quantidadePreDesnatado);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-      }
-      //se somente a gordura estiver abaixo do desejado acrescentar butter oil ate a gordura atingir o desejado
-      if (totalGordura < esperadoGordura) {
-        while (totalGordura < esperadoGordura) {
-          quantidadeButterOil++;
-          totalGorduraButterOil = this.calcularGordura(gorduraButterOil, quantidadeButterOil);
-          totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-      }
-      ///////caso as materias primas estiverem altas
-
-      //se a gordura estiver mais alta que o desejado e estiver usando butter oil retirar butter oil ate a gordura atingir o desejado
-      if (totalGordura > esperadoGordura && quantidadeButterOil > 0) {
-        while (totalGordura > esperadoGordura&&quantidadeButterOil>0) {
-          quantidadeButterOil--;
-          totalGorduraButterOil = this.calcularGordura(gorduraButterOil, quantidadeButterOil);
-          totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-      }
-      //se o snf estiver mais alto que o snf desejado e estiver usando pre desnatado retirar o pre desnatado ate o snf atingir o desejado
-      if (totalSnf > esperadoSnf && quantidadePreDesnatado > 0) {
-        while (totalSnf > esperadoSnf&&quantidadePreDesnatado>=0) {
-          quantidadePreDesnatado--;
-          totalGorduraPreDesnatado = this.calcularGordura(gorduraPreDesnatado, quantidadePreDesnatado);
-          totalSnfPreDesnatado = this.calcularSnf(snfPreDesnatado, quantidadePreDesnatado);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-
-      }
-      //se o a gordura e o snf estiverem altos retirar pre integral ate atingir o snf objetivo
-      if (totalGordura > esperadoGordura && totalSnf > esperadoSnf) {
-        while (totalSnf > esperadoSnf&&quantiddaePreIntegral>=0) {
-          quantiddaePreIntegral--;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-
-      }
-      //se o snf estiver alto e nao estiver usando pre desnatado retirar pre integral ate snf atingir o objetivo
-      if (totalSnf > esperadoSnf && quantidadePreDesnatado == 0) {
-        while (totalSnf > esperadoSnf&&quantidadePreDesnatado>=0) {
-          quantiddaePreIntegral--;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-
-      }
-      if (totalGordura > esperadoGordura && quantidadeButterOil == 0) {
-        while (totalGordura > esperadoGordura&&quantiddaePreIntegral>=0) {
-          quantiddaePreIntegral--;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperador){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
-          }
-        }
-
-
-      }
-    }
-    return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil};
+    console.log('tfAtual:' + this.tfAtual);
+    console.log('rfAtual' + this.rfAtual);
+    console.log('fatorAcucarAtual:' + this.fatorAcucarAtual);
+    console.log('quantidade agua:' + this.quantidadeAgua);
+    console.log('quantidade desnatado:' + this.quantidadePreDesnatado);
+    console.log('quantidade butter oil:' + this.quantidadeButterOil);
+    return {quantidadeAgua:this.quantidadeAgua,quantidadePreDesnatado:this.quantidadePreDesnatado,quantidadeButterOil:this.quantidadeButterOil}
   }
 
+  private correcoesIniciais(tfEsperado: number, snfAgua: number, gorduraAgua: number, acucar: number, esperadoSnf: number, snfPreDesnatado: number, gorduraPreDesnatado: number) {
+    while (this.tfAtual > tfEsperado) {
+      this.acrescentarMateriaPrima('agua', snfAgua, gorduraAgua, acucar);
+    }
+    while (this.totalSnf < esperadoSnf) {
+      this.acrescentarMateriaPrima('preDesnatado', snfPreDesnatado, gorduraPreDesnatado, acucar);
+    }
+  }
 
-  public autoCalcularComLactose(gorduraLeite:number,
-                                snfLeite:number,
-                                gorduraPreIntegral:number,
-                                snfPreIntegral:number,
-                                gorduraPreDesnatado:number,
-                                snfPreDesnatado:number,
-                                gorduraButterOil:number,
-                                snfButterOil:number,
-                                gorduraLactose:number,
-                                snfLactose:number,
-                                acucar:number,
-                                esperadoGordura:number,
-                                esperadoSnf:number,
-                                rfEsperado:number,
-                                fatorAcucarEsperado:number,
-                                tfEsperado:number,quantidadeLactose:number=125) {
-    let rfAtual=0
-    let fatorAcucarAtual=0
+  private corrigirGordura(esperadoGordura: number, snfPreDesnatado: number, gorduraPreDesnatado: number, acucar: number, snfButterOil: number, gorduraButterOil: number) {
+    while (this.totalGordura < esperadoGordura) {
+      this.acrescentarMateriaPrima('butterOil', snfPreDesnatado, gorduraPreDesnatado, acucar);
+    }
+    while (this.totalGordura > esperadoGordura && this.quantidadeButterOil > 0) {
+      this.retirarMateriaPrima('butterOil', snfButterOil, gorduraButterOil, acucar);
+    }
+  }
 
-    let quantidadeLeite = 0;
-    let totalGorduraLeite = this.calcularGordura(gorduraLeite, quantidadeLeite);
-    let totalSnfLeite = this.calcularSnf(snfLeite, quantidadeLeite);
+  private corrigirSnf(esperadoSnf: number, snfPreDesnatado: number, gorduraPreDesnatado: number, acucar: number) {
+    while (this.totalSnf < esperadoSnf) {
+      this.acrescentarMateriaPrima('preDesnatado', snfPreDesnatado, gorduraPreDesnatado, acucar);
+    }
+    while (this.totalSnf > esperadoSnf && this.quantidadePreDesnatado > 0) {
+      this.retirarMateriaPrima('preDesnatado', snfPreDesnatado, gorduraPreDesnatado, acucar);
+    }
+  }
 
-    let quantiddaePreIntegral = 0;
-    let totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-    let totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
+  private corrigirTf(tfEsperado: number, snfAgua: number, gorduraAgua: number, acucar: number) {
+    while (this.tfAtual > tfEsperado) {
+      this.acrescentarMateriaPrima('agua', snfAgua, gorduraAgua, acucar);
+    }
+    while (this.tfAtual < tfEsperado && this.quantidadeAgua > 0) {
+      this.retirarMateriaPrima('agua', snfAgua, gorduraAgua, acucar);
+    }
+  }
 
-    let quantidadePreDesnatado = 0;
-    let totalGorduraPreDesnatado = this.calcularGordura(gorduraPreDesnatado, quantidadePreDesnatado);
-    let totalSnfPreDesnatado = this.calcularSnf(snfPreDesnatado, quantidadePreDesnatado);
+  private acrescentarMateriaPrima(nome: string, analiseSnf: number, analiseGordura: number, acucar: number) {
+    if (nome == 'agua') {
+      this.quantidadeAgua += 1;
+      this.totalSnfAgua = this.calcularSnf(analiseSnf, this.quantidadeAgua);
+      this.totalGorduraAgua = this.calcularGordura(analiseGordura, this.quantidadeAgua);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
+    }
+    if (nome == 'preDesnatado') {
+      this.quantidadePreDesnatado+=1;
+      this.totalSnfPreDesnatado = this.calcularSnf(analiseSnf, this.quantidadePreDesnatado);
+      this.totalGorduraPreDesnatado = this.calcularGordura(analiseGordura, this.quantidadePreDesnatado);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
+    }
+    if (nome == 'preIntegral') {
+      this.quantidadePreIntegral += 1;
+      this.totalSnfPreIntegral = this.calcularSnf(analiseSnf, this.quantidadePreIntegral);
+      this.totalGorduraPreIntegral = this.calcularGordura(analiseGordura, this.quantidadePreIntegral);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
+    }
+    if (nome == 'butterOil') {
+      this.quantidadeButterOil += 1;
+      this.totalSnfButterOil = this.calcularSnf(analiseSnf, this.quantidadeButterOil);
+      this.totalGorduraButterOil = this.calcularGordura(analiseGordura, this.quantidadeButterOil);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
+    }
+  }
 
-    let quantidadeButterOil = 0;
-    let totalGorduraButterOil = this.calcularGordura(gorduraButterOil, quantidadeButterOil);
-    let totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
-
-    let totalGorduraLactose=this.calcularGordura(gorduraLactose,quantidadeLactose)
-    let totalSnfLactose=this.calcularGordura(snfLactose,quantidadeLactose)
-
-    let totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-    let totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-
-    let totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-
-    let tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-    //1 acrescentar leite ate ajustar o snf objetivo
-    while (tfAtual > tfEsperado) {
-      quantidadeLeite++;
-      totalGorduraLeite = this.calcularGordura(gorduraLeite, quantidadeLeite);
-      totalSnfLeite = this.calcularSnf(snfLeite, quantidadeLeite);
-      totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-      totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-      totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-      tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-      this.calcularRf(acucar,totalSnf)
-      this.calcularFatorAcucar(acucar,totalGordura)
-
+  private retirarMateriaPrima(nome: string, analiseSnf: number, analiseGordura: number, acucar: number) {
+    if (nome == 'agua') {
+      this.quantidadeAgua -= 1;
+      this.totalSnfAgua = this.calcularSnf(analiseSnf, this.quantidadeAgua,);
+      this.totalGorduraAgua = this.calcularGordura(analiseGordura, this.quantidadeAgua);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
+    }
+    if (nome == 'preDesnatado') {
+      this.quantidadePreDesnatado -=1;
+      this.totalSnfPreDesnatado = this.calcularSnf(analiseSnf, this.quantidadePreDesnatado);
+      this.totalGorduraPreDesnatado = this.calcularGordura(analiseGordura, this.quantidadePreDesnatado);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
+    }
+    if (nome == 'preIntegral') {
+      this.quantidadePreIntegral -= 1;
+      this.totalSnfPreIntegral = this.calcularSnf(analiseSnf, this.quantidadePreIntegral);
+      this.totalGorduraPreIntegral = this.calcularGordura(analiseGordura, this.quantidadePreIntegral);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
+    }
+    if (nome == 'butterOil') {
+      this.quantidadeButterOil -= 1;
+      this.totalSnfButterOil = this.calcularSnf(analiseSnf, this.quantidadeButterOil);
+      this.totalGorduraButterOil = this.calcularGordura(analiseGordura, this.quantidadeButterOil);
+      this.totalGordura = this.totalGorduraAgua + this.totalGorduraPreIntegral + this.totalGorduraPreDesnatado + this.totalGorduraButterOil;
+      this.totalSnf = this.totalSnfAgua + this.totalSnfPreIntegral + this.totalSnfPreDesnatado + this.totalSnfButterOil;
+      this.totalPartida = this.quantidadeAgua + this.quantidadePreIntegral + this.quantidadePreDesnatado + this.quantidadeButterOil;
+      this.tfAtual = parseFloat(this.calcularTf(this.totalGordura, this.totalSnf, acucar, this.totalPartida));
+      this.rfAtual = parseFloat(this.calcularRf(this.totalGordura, this.totalSnf));
+      this.fatorAcucarAtual = parseFloat(this.calcularFatorAcucar(acucar, this.totalGordura));
     }
 
+  }
 
-    //Acrescente pre integral ate atingir o snf objetivo
-    while (esperadoSnf > totalSnf) {
-      quantiddaePreIntegral++;
-      totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-      totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-      totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-      totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-      totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-      tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-      this.calcularRf(acucar,totalSnf)
-      this.calcularFatorAcucar(acucar,totalGordura)
+  public definirRange(minimo: number, maximo: number): number[] {
+    let range = [];
+    for (let x = 0; minimo <= maximo; x++) {
+      range.push(parseFloat(minimo.toFixed(3)));
+      parseFloat((minimo += 0.001).toFixed(3));
+
     }
-
-    while ((rfAtual != rfEsperado) || (tfAtual != tfEsperado)||(fatorAcucarAtual!=fatorAcucarEsperado)) {
-      if(tfAtual > tfEsperado) {
-        while (tfAtual > tfEsperado) {
-          quantidadeLeite++;
-          totalGorduraLeite = this.calcularGordura(gorduraLeite, quantidadeLeite);
-          totalSnfLeite = this.calcularSnf(snfLeite, quantidadeLeite);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-      if(tfAtual < tfEsperado) {
-        while (tfAtual < tfEsperado) {
-          quantidadeLeite--;
-          totalGorduraLeite = this.calcularGordura(gorduraLeite, quantidadeLeite);
-          totalSnfLeite = this.calcularSnf(snfLeite, quantidadeLeite);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-
-      }
-      //loop auto ajuste
-      //se o snf e a gordura estiverem abaixo do desejado aumentar  o pre integral ate o total de snf atingir o desejado de snf
-      if (totalSnf < esperadoSnf && totalGordura < esperadoGordura) {
-        while (totalSnf < esperadoSnf) {
-          quantiddaePreIntegral++;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-      //se somente o  snf estiver abaixo do desejado aumentar o pre desnatado ate o snf atingir o desejado
-      if (totalSnf < esperadoSnf) {
-        while (totalSnf < esperadoSnf) {
-          quantidadePreDesnatado++;
-          totalGorduraPreDesnatado = this.calcularGordura(gorduraPreDesnatado, quantidadePreDesnatado);
-          totalSnfPreDesnatado = this.calcularSnf(snfPreDesnatado, quantidadePreDesnatado);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-      //se somente a gordura estiver abaixo do desejado acrescentar butter oil ate a gordura atingir o desejado
-      if (totalGordura < esperadoGordura) {
-        while (totalGordura < esperadoGordura) {
-          quantidadeButterOil++;
-          totalGorduraButterOil = this.calcularGordura(gorduraButterOil, quantidadeButterOil);
-          totalSnfButterOil =this.calcularSnf(snfButterOil,quantidadeButterOil);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-      }
-      ///////caso as materias primas estiverem altas
-
-      //se a gordura estiver mais alta que o desejado e estiver usando butter oil retirar butter oil ate a gordura atingir o desejado
-      if (totalGordura > esperadoGordura && quantidadeButterOil > 0) {
-        while (totalGordura > esperadoGordura) {
-          quantidadeButterOil--;
-          totalGorduraButterOil = this.calcularGordura(gorduraButterOil, quantidadeButterOil);
-          totalSnfButterOil = this.calcularSnf(snfButterOil,quantidadeButterOil);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-      //se o snf estiver mais alto que o snf desejado e estiver usando pre desnatado retirar o pre desnatado ate o snf atingir o desejado
-      if (totalSnf > esperadoSnf && quantidadePreDesnatado > 0) {
-        while (totalSnf > esperadoSnf) {
-          quantidadePreDesnatado--;
-          totalGorduraPreDesnatado = this.calcularGordura(gorduraPreDesnatado, quantidadePreDesnatado);
-          totalSnfPreDesnatado = this.calcularSnf(snfPreDesnatado, quantidadePreDesnatado);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-      //se o a gordura e o snf estiverem altos retirar pre integral ate atingir o snf objetivo
-      if (totalGordura > esperadoGordura && totalSnf > esperadoSnf) {
-        while (totalSnf > esperadoSnf) {
-          quantiddaePreIntegral--;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-      //se o snf estiver alto e nao estiver usando pre desnatado retirar pre integral ate snf atingir o objetivo
-      if (totalSnf > esperadoSnf && quantidadePreDesnatado == 0) {
-        while (totalSnf > esperadoSnf) {
-          quantiddaePreIntegral--;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-      if (totalGordura > esperadoGordura && quantidadeButterOil == 0) {
-        while (totalGordura > esperadoGordura) {
-          quantiddaePreIntegral--;
-          totalGorduraPreIntegral = this.calcularGordura(gorduraPreIntegral, quantiddaePreIntegral);
-          totalSnfPreIntegral = this.calcularSnf(snfPreIntegral, quantiddaePreIntegral);
-          totalSnf = totalSnfLeite + totalSnfPreIntegral + totalSnfPreDesnatado + totalSnfButterOil+totalSnfLactose;
-          totalGordura = totalGorduraLeite + totalGorduraPreIntegral + totalGorduraPreDesnatado + totalGorduraButterOil+totalGorduraLactose;
-          totalPartida = quantidadeLeite + quantidadeButterOil + quantiddaePreIntegral + quantidadePreDesnatado+quantidadeLactose;
-          tfAtual = parseFloat(this.calcularTf(totalGordura, totalSnf, acucar, totalPartida));
-          rfAtual=parseFloat(this.calcularRf(totalGordura,totalSnf))
-          fatorAcucarAtual=parseFloat(this.calcularFatorAcucar(acucar,totalGordura))
-          if(tfAtual==tfEsperado&&rfAtual==rfEsperado&&fatorAcucarAtual==fatorAcucarEsperado){
-            return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
-          }
-        }
-
-      }
-    }
-    return{leite:quantidadeLeite,preIntegral:quantiddaePreIntegral,preDesnatado:quantidadePreDesnatado,butterOil:quantidadeButterOil,lactose:quantidadeLactose};
+    range.push(maximo);
+    return range;
   }
 
   private calcularTf(gorduraTotal: number, snfTotal: number, acucarTotal: number, partidaTotal: number) {
@@ -538,14 +234,44 @@ export class AutoCalcularPartidaService {
   private calcularSnf(snfAnalise: number, quantidade: number) {
     return (quantidade * snfAnalise) / 100;
   }
-  private calcularFatorAcucar(acucar:number,totalGordura:number){
-    return( acucar/totalGordura).toFixed(2)
+
+  private calcularFatorAcucar(acucar: number, totalGordura: number) {
+    return (acucar / totalGordura).toFixed(2);
 
   }
-  private calcularRf(totalGordura:number,totalSnf:number){
-    return (totalGordura/totalSnf).toFixed(3)
+
+  private calcularRf(totalGordura: number, totalSnf: number) {
+    return (totalGordura / totalSnf).toFixed(3);
   }
 
+  private resetarValores(){
+    this.rfAtual = 0;
+    this.fatorAcucarAtual = 0;
+    this.quantidadeDeTentativas = 0;
+
+    this. quantidadeAgua = 0;
+    this.totalGorduraAgua = 0;
+    this.totalSnfAgua = 0;
+
+    this.quantidadePreIntegral = 0;
+    this.totalGorduraPreIntegral = 0;
+    this.totalSnfPreIntegral = 0;
+
+    this.quantidadePreDesnatado = 0;
+    this.totalGorduraPreDesnatado = 0;
+    this.totalSnfPreDesnatado = 0;
+
+    this.quantidadeButterOil = 0;
+    this.totalGorduraButterOil = 0;
+    this.totalSnfButterOil = 0;
+
+    this.totalSnf = 0;
+    this.totalGordura = 0;
+
+    this.totalPartida = 0;
+
+    this.tfAtual = 100;
+  }
 
 
 }
