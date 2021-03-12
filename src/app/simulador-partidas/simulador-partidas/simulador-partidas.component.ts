@@ -2,11 +2,13 @@ import {Component, ElementRef, OnDestroy, OnInit, Renderer2, TemplateRef, ViewCh
 import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {Formula} from '../../entidades/Formula';
 import {ActivatedRoute, Router} from '@angular/router';
-import {take} from 'rxjs/operators';
 import {Subscription} from 'rxjs';
 import {Tanque} from '../../entidades/tanque';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
-import {AutoCalcularPartidaService} from './auto-calcular-partida.service';
+import {AutoCalcularLightSemLactoseService} from './auto-calcular-light-sem-lactose.service';
+import {AutoCalcularLightComLactoseService} from './auto-calcular-light-com-lactose.service';
+import {AutoCalcular46SemLactoseService} from './auto-calcular-4-6-sem-lactose.service';
+import {AutoCalcular8SemLactoseService} from './auto-calcular-8-sem-lactose.service';
 
 
 @Component({
@@ -39,7 +41,10 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
               private modalService: BsModalService,
               // private tanqueService: TanqueService,//criar servico temporario
               private router: Router,
-              private autoCalcularService: AutoCalcularPartidaService) {
+              private autoCalcularLightSemLactoseService: AutoCalcularLightSemLactoseService,
+              private autoCalcularComLactoseService:AutoCalcularLightComLactoseService,
+              private autoCalcular4e6SemLactose:AutoCalcular46SemLactoseService,
+              private autoCalcular8SemLactose:AutoCalcular8SemLactoseService) {
   }
 
   ngOnDestroy(): void {
@@ -72,8 +77,12 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     this.formularioVariaves = this.formBuilder.group({
       tf: [],
       tfObjetivo: [0],
-      fatorAcucar: [],
-      rf: [],
+      fatorAcucarMinimo: [],
+      fatorAcucar:[],
+      fatorAcucarMaximo: [],
+      rfMinimo: [],
+      rf:[],
+      rfMaximo: [],
       acucar: [0],
       formulas: [],
       fatorAcucarAtual: [],
@@ -81,29 +90,45 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     });
     let formula = new Formula();
     formula.gordura = '8.10';
-    formula.rf = 0.403;
-    formula.fa = 5.5;
+    formula.rfMinimo = 0.401;
+    formula.rfObjetivo=0.403
+    formula.rfMaximo=0.403
+    formula.faMinimo = 5.48;
+    formula.faObjetivo=5.50
+    formula.faMaximo=5.52
     formula.quantidadeDeAcucar = 7500;
     formula.tfObjetivo = 44.2;
 
     let formula2 = new Formula();
     formula2.gordura = '4';
-    formula2.rf = 0.202;
-    formula2.fa = 11.77;
+    formula2.rfMinimo = 0.200;
+    formula2.rfObjetivo=0.202
+    formula2.rfMaximo=0.210
+    formula2.faMinimo = 11.75;
+    formula2.faObjetivo=11.77
+    formula2.faMaximo=11.82
     formula2.quantidadeDeAcucar = 8200;
     formula2.tfObjetivo = 44.2;
 
     let formula3 = new Formula();
     formula3.gordura = '6';
-    formula3.rf = 0.298;
-    formula3.fa = 7.73;
+    formula3.rfMinimo = 0.296;
+    formula3.rfObjetivo=0.298
+    formula3.rfMaximo = 0.300;
+    formula3.faMinimo = 7.72;
+    formula3.faObjetivo=7.73
+    formula3.faMaximo = 7.76;
     formula3.quantidadeDeAcucar = 7900;
     formula3.tfObjetivo = 44.2;
 
     let formula4 = new Formula();
     formula4.gordura = 'light';
-    formula4.rf = 0.010;
-    formula4.fa = 179;
+    formula4.rfMinimo = 0.010;
+    formula4.rfObjetivo=0.010
+    formula4.rfMaximo = 0.020;
+    formula4.faMinimo = 0.10;
+    formula4.faObjetivo=179
+    formula4.faMaximo = 225.0;
     formula4.quantidadeDeAcucar = 7200;
     formula4.tfObjetivo = 32;
 
@@ -265,12 +290,20 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
 
   escolherFormulaDeLca() {
     this.formularioVariaves.get('formulas')?.valueChanges.subscribe((formula: Formula) => {
-      let rf = this.formularioVariaves.get('rf');
-      let fa = this.formularioVariaves.get('fatorAcucar');
+      let rfMinimo = this.formularioVariaves.get('rfMinimo');
+      let rf=this.formularioVariaves.get('rf');
+      let rfMaximo=  this.formularioVariaves.get('rfMaximo');
+      let faMinimo = this.formularioVariaves.get('fatorAcucarMinimo');
+      let fa=this.formularioVariaves.get('fatorAcucar')
+      let faMaximo=this.formularioVariaves.get('fatorAcucarMaximo');
       let acucar = this.formularioVariaves.get('acucar');
       let tfObjetivo = this.formularioVariaves.get('tfObjetivo');
-      rf?.setValue(formula.rf);
-      fa?.setValue(formula.fa);
+      rf?.setValue(formula.rfObjetivo)
+      rfMinimo?.setValue(formula.rfMinimo);
+      rfMaximo?.setValue(formula.rfMaximo);
+      fa?.setValue(formula.faObjetivo)
+      faMinimo?.setValue(formula.faMinimo);
+      faMaximo?.setValue(formula.faMaximo)
       tfObjetivo?.setValue(formula.tfObjetivo);
       acucar?.setValue(formula.quantidadeDeAcucar);
       this.quantidadeInput.nativeElement.focus();
@@ -400,15 +433,19 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value);
     let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value);
     let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value);
-    let result = this.autoCalcularService.autoCalcularLight(
+    let faMinimo=parseFloat(this.formularioVariaves.get('fatorAcucarMinimo')?.value)
+    let faMaximo=parseFloat(this.formularioVariaves.get('fatorAcucarMaximo')?.value)
+    let rfMinimo=parseFloat(this.formularioVariaves.get('rfMinimo')?.value)
+    let rfMaximo=parseFloat(this.formularioVariaves.get('rfMaximo')?.value)
+    let result = this.autoCalcularLightSemLactoseService.autoCalcularLightSemLactose(
       acucar,
       totalEsperadoGordura,
       totalEsperadoSnf,
       tfObjetivo,
-      0.10,
-      225,
-      0.010,
-      0.020,
+      faMinimo,
+      faMaximo,
+      rfMinimo,
+      rfMaximo,
       analiseGorduraPreDesnatado,
       analiseSnfLeitePreDesnatado,
       analiseGorduraAgua,
@@ -424,5 +461,159 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     this.atualizarDadosFormulario(2);
   }
 
+  autoCalcularLightComLactose() {
+    let agua = this.formArray.controls[0];
+    let analiseGorduraAgua = parseFloat(agua.get('analiseGordura')?.value);
+    let analiseSnfAgua = parseFloat(agua.get('analiseSnf')?.value);
 
+    let preCondensadoDesnatado = this.formArray.controls[1];
+    let analiseGorduraPreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseGordura')?.value);
+    let analiseSnfLeitePreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseSnf')?.value);
+
+    let butterOil = this.formArray.controls[2];
+    let analiseGorduraButterOil = parseFloat(butterOil.get('analiseGordura')?.value);
+    let analiseSnfButterOil = parseFloat(butterOil.get('analiseSnf')?.value);
+
+    let lactose = this.formArray.controls[3];
+    let analiseGorduraLactose = parseFloat(lactose.get('analiseGordura')?.value);
+    let analiseSnfLactose = parseFloat(lactose.get('analiseSnf')?.value);
+
+
+    let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
+    let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value);
+    let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value);
+    let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value);
+    let faMinimo=parseFloat(this.formularioVariaves.get('fatorAcucarMinimo')?.value)
+    let faMaximo=parseFloat(this.formularioVariaves.get('fatorAcucarMaximo')?.value)
+    let rfMinimo=parseFloat(this.formularioVariaves.get('rfMinimo')?.value)
+    let rfMaximo=parseFloat(this.formularioVariaves.get('rfMaximo')?.value)
+    let result = this.autoCalcularComLactoseService.autoCalcularLightComLactose(
+      acucar,
+      totalEsperadoGordura,
+      totalEsperadoSnf,
+      tfObjetivo,
+      faMinimo,
+      faMaximo,
+      rfMinimo,
+      rfMaximo,
+      analiseGorduraPreDesnatado,
+      analiseSnfLeitePreDesnatado,
+      analiseGorduraAgua,
+      analiseSnfAgua,
+      analiseGorduraButterOil,
+      analiseSnfButterOil,
+      analiseGorduraLactose,
+      analiseSnfLactose
+    );
+    agua.patchValue({quantidade: result.quantidadeAgua});
+    this.atualizarDadosFormulario(0);
+    preCondensadoDesnatado.patchValue({quantidade: result.quantidadePreDesnatado});
+    this.atualizarDadosFormulario(1);
+    butterOil.patchValue({quantidade: result.quantidadeButterOil});
+    this.atualizarDadosFormulario(2);
+    lactose.patchValue({quantidade: result.quantidadeLactose});
+    this.atualizarDadosFormulario(3);
+  }
+
+
+  autoCalcular4E6SemLactose() {
+    let leiteIntegral = this.formArray.controls[0];
+    let analiseGorduraLeiteIntegral = parseFloat(leiteIntegral.get('analiseGordura')?.value);
+    let analiseSnfLeiteIntegral = parseFloat(leiteIntegral.get('analiseSnf')?.value);
+
+    let preCondensadoDesnatado = this.formArray.controls[1];
+    let analiseGorduraPreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseGordura')?.value);
+    let analiseSnfLeitePreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseSnf')?.value);
+
+    let preCondensadoIntegral = this.formArray.controls[2];
+    let analiseGorduraPreIntegral = parseFloat(preCondensadoIntegral.get('analiseGordura')?.value);
+    let analiseSnfLeitePreIntegral = parseFloat(preCondensadoIntegral.get('analiseSnf')?.value);
+
+
+    let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
+    let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value);
+    let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value);
+    let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value);
+    let faMinimo=parseFloat(this.formularioVariaves.get('fatorAcucarMinimo')?.value)
+    let faMaximo=parseFloat(this.formularioVariaves.get('fatorAcucarMaximo')?.value)
+    let rfMinimo=parseFloat(this.formularioVariaves.get('rfMinimo')?.value)
+    let rfMaximo=parseFloat(this.formularioVariaves.get('rfMaximo')?.value)
+   let result= this.autoCalcular4e6SemLactose.autoCalcularSemLactose(
+      acucar,
+      totalEsperadoGordura,
+      totalEsperadoSnf,
+      tfObjetivo,
+      faMinimo,
+      faMaximo,
+      rfMinimo,
+      rfMaximo,
+      analiseGorduraPreDesnatado,
+      analiseSnfLeitePreDesnatado,
+      analiseGorduraLeiteIntegral,
+      analiseSnfLeiteIntegral,
+      analiseGorduraPreIntegral,
+      analiseSnfLeitePreIntegral
+      );
+    leiteIntegral.patchValue({quantidade: result.quantidadeLeite});
+    this.atualizarDadosFormulario(0);
+    preCondensadoDesnatado.patchValue({quantidade: result.quantidadePreDesnatado});
+    this.atualizarDadosFormulario(1);
+    preCondensadoIntegral.patchValue({quantidade:result.quantidadePreIntegral})
+    this.atualizarDadosFormulario(2);
+
+
+  }
+
+  autoCalcular8() {
+    let leiteIntegral = this.formArray.controls[0];
+    let analiseGorduraLeiteIntegral = parseFloat(leiteIntegral.get('analiseGordura')?.value);
+    let analiseSnfLeiteIntegral = parseFloat(leiteIntegral.get('analiseSnf')?.value);
+
+    let preCondensadoDesnatado = this.formArray.controls[1];
+    let analiseGorduraPreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseGordura')?.value);
+    let analiseSnfLeitePreDesnatado = parseFloat(preCondensadoDesnatado.get('analiseSnf')?.value);
+
+    let preCondensadoIntegral = this.formArray.controls[2];
+    let analiseGorduraPreIntegral = parseFloat(preCondensadoIntegral.get('analiseGordura')?.value);
+    let analiseSnfLeitePreIntegral = parseFloat(preCondensadoIntegral.get('analiseSnf')?.value);
+
+    let butterOil = this.formArray.controls[3];
+    let analiseGorduraButterOil = parseFloat(butterOil.get('analiseGordura')?.value);
+    let analiseSnfButterOil = parseFloat(butterOil.get('analiseSnf')?.value);
+
+    let acucar = parseInt(this.formularioVariaves.get('acucar')?.value);
+    let tfObjetivo = parseFloat(this.formularioVariaves.get('tfObjetivo')?.value);
+    let totalEsperadoGordura = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoGordura')?.value);
+    let totalEsperadoSnf = parseFloat(this.formularioTotalPartidaTotalEsperado.get('totalEsperadoSnf')?.value);
+    let faMinimo=parseFloat(this.formularioVariaves.get('fatorAcucarMinimo')?.value)
+    let faMaximo=parseFloat(this.formularioVariaves.get('fatorAcucarMaximo')?.value)
+    let rfMinimo=parseFloat(this.formularioVariaves.get('rfMinimo')?.value)
+    let rfMaximo=parseFloat(this.formularioVariaves.get('rfMaximo')?.value)
+    let result=this.autoCalcular8SemLactose.autoCalcularSemLactose(
+      acucar,
+      totalEsperadoGordura,
+      totalEsperadoSnf,
+      rfMinimo,
+      rfMaximo,
+      faMinimo,
+      faMaximo,
+      tfObjetivo,
+      analiseGorduraLeiteIntegral,
+      analiseSnfLeiteIntegral,
+      analiseGorduraPreIntegral,
+      analiseSnfLeitePreIntegral,
+      analiseGorduraPreDesnatado,
+      analiseSnfLeitePreDesnatado,
+      analiseGorduraButterOil,
+      analiseSnfButterOil
+    )
+    leiteIntegral.patchValue({quantidade: result.leite});
+    this.atualizarDadosFormulario(0);
+    preCondensadoDesnatado.patchValue({quantidade: result.preDesnatado});
+    this.atualizarDadosFormulario(1);
+    preCondensadoIntegral.patchValue({quantidade:result.preIntegral})
+    this.atualizarDadosFormulario(2);
+    butterOil.patchValue({quantidade:result.butterOil})
+    this.atualizarDadosFormulario(3)
+  }
 }

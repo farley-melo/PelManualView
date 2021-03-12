@@ -73,8 +73,10 @@
             </tbody>
           </table>
         </div>
-        <button class="btn btn-success ">lactose</button>
-        <button class="btn btn-success " (click)="autoCalcularLightSemLactose()">Light</button>
+        <button class="btn btn-success " (click)="autoCalcularLightComLactose()" *ngIf="formArray.controls.length==4">LightComLactose</button>
+        <button class="btn btn-success " (click)="autoCalcularLightSemLactose()" *ngIf="formArray.controls.length==3">LightSemLactose</button>
+        <button class="btn btn-success " (click)="autoCalcular4E6SemLactose()">AutoCalcular4SemLactose</button>
+        <button class="btn btn-success " (click)="autoCalcular8()">8%</button>
       </div>
     </form>
     <form [formGroup]="formularioTotalPartidaTotalEsperado">
@@ -119,8 +121,12 @@
         <thead class="thead-dark">
         <tr>
           <th scope="col">Escolha uma formula</th>
+          <th scope="col">Fator açucar mínimo</th>
           <th scope="col">Fator açucar objetivo</th>
-          <th scope="col">RF objetivo</th>
+          <th scope="col">Fator açucar maximo</th>
+          <th scope="col">RF minimo</th>
+          <th scope="col"Rf>RF objetivo</th>
+          <th scope="col">RF maximo</th>
           <th scope="col">Açucar</th>
           <th scope="col">Tf objetivo</th>
           <th scope="col">TF</th>
@@ -135,8 +141,12 @@
               <option *ngFor="let formula of listaDeFormulas" [ngValue]="formula">{{formula.gordura}}</option>
             </select>
           </td>
+          <td><input formControlName="fatorAcucarMinimo"  class="bg-info "></td>
           <td><input formControlName="fatorAcucar"  class="bg-info "></td>
-          <td><input formControlName="rf"  class="bg-info inputEstatistica"></td>
+          <td><input formControlName="fatorAcucarMaximo"  class="bg-info "></td>
+          <td><input formControlName="rfMinimo"  class="bg-info inputEstatistica"></td>
+          <td><input formControlName="rf"  class="bg-info "></td>
+          <td><input formControlName="rfMaximo"  class="bg-info inputEstatistica"></td>
           <td><input formControlName="acucar" class="inputEstatistica "></td>
           <td><input formControlName="tfObjetivo" class="inputEstatistica"></td>
           <td><input formControlName="tf"  class="bg-danger inputEstatistica"></td>
