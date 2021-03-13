@@ -4,9 +4,9 @@ import {AutoCalcularBase} from './auto-calcular-base';
 @Injectable({
   providedIn: 'root'
 })
-export class AutoCalcular46SemLactoseService extends AutoCalcularBase{
+export class AutoCalcular46ComLactoseService extends AutoCalcularBase{
 
-  public autoCalcularSemLactose(acucar: number,
+  public autoCalcular4e6ComLactose(acucar: number,
                                 esperadoGordura: number,
                                 esperadoSnf: number,
                                 tfEsperado: number,
@@ -19,13 +19,14 @@ export class AutoCalcular46SemLactoseService extends AutoCalcularBase{
                                 gorduraLeite: number,
                                 snfLeite: number,
                                 gorduraPreIntegral:number,
-                                snfPreIntegral:number
+                                snfPreIntegral:number,
+                                snfLactose:number,
+                                gorduraLactose:number
                                  ){
-
+    this.resetarValores()
     let fatorAcucarRange = this.definirRange(fatorAcucarMinimo, fatorAcucarMaximo);
     let rfRange = this.definirRange(rfMinimo, rfMaximo);
-    this.resetarValores()
-    this.correcoesIniciais(tfEsperado,snfLeite,gorduraLeite,acucar,esperadoSnf,snfPreDesnatado,gorduraPreDesnatado)
+    this.correcoesIniciais(tfEsperado,snfLeite,gorduraLeite,acucar,esperadoSnf,snfPreDesnatado,gorduraPreDesnatado,snfLactose,gorduraLactose)
     while (!(fatorAcucarRange.includes(this.fatorAcucarAtual) && rfRange.includes(this.rfAtual) && this.tfAtual == tfEsperado)) {
       this.quantidadeDeTentativas += 1;
       if (this.quantidadeDeTentativas > 100) {
@@ -46,11 +47,14 @@ export class AutoCalcular46SemLactoseService extends AutoCalcularBase{
     console.log('quantidade pre integral:' + this.quantidadePreIntegral);
     console.log('quantidade pre desnatado:' + this.quantidadePreDesnatado);
     console.log('quantidade butter oil:' + this.quantidadeButterOil);
-    return {quantidadeLeite:this.quantidadeLeiteIntegral,quantidadePreDesnatado:this.quantidadePreDesnatado,quantidadePreIntegral:this.quantidadePreIntegral,quantidadeButterOil:this.quantidadeButterOil}
+    return {quantidadeLeite:this.quantidadeLeiteIntegral,quantidadePreDesnatado:this.quantidadePreDesnatado,quantidadePreIntegral:this.quantidadePreIntegral,quantidadeButterOil:this.quantidadeButterOil,quantidadeLactose:this.quantidadeLactose}
 
   }
 
-  private correcoesIniciais(tfEsperado: number, snfLeite: number, gorduraLeite: number, acucar: number, esperadoSnf: number, snfPreDesnatado: number, gorduraPreDesnatado: number) {
+  private correcoesIniciais(tfEsperado: number, snfLeite: number, gorduraLeite: number, acucar: number, esperadoSnf: number, snfPreDesnatado: number, gorduraPreDesnatado: number,snfLactose:number,gorduraLactose:number) {
+    while(this.quantidadeLactose<125){
+      this.acrescentarMateriaPrima('lactose',snfLactose,gorduraLactose,acucar)
+    }
     while (this.tfAtual > tfEsperado) {
       this.acrescentarMateriaPrima('leiteIntegral', snfLeite, gorduraLeite, acucar);
     }

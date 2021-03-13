@@ -73,10 +73,12 @@
             </tbody>
           </table>
         </div>
-        <button class="btn btn-success " (click)="autoCalcularLightComLactose()" *ngIf="formArray.controls.length==4">LightComLactose</button>
-        <button class="btn btn-success " (click)="autoCalcularLightSemLactose()" *ngIf="formArray.controls.length==3">LightSemLactose</button>
-        <button class="btn btn-success " (click)="autoCalcular4E6SemLactose()">AutoCalcular4SemLactose</button>
-        <button class="btn btn-success " (click)="autoCalcular8()">8%</button>
+        <button class="btn btn-success " (click)="autoCalcularLightComLactose()" >LightComLactose</button>
+        <button class="btn btn-success " (click)="autoCalcularLightSemLactose()" >LightSemLactose</button>
+        <button class="btn btn-success " (click)="autoCalcular4E6SemLactose()">4E6SemLactose</button>
+        <button class="btn btn-success " (click)="autoCalcular4E6ComLactose()">4E6ComLactose</button>
+        <button class="btn btn-success " (click)="autoCalcularSemLactose8()">8%semLactose</button>
+        <button class="btn btn-success " (click)="autoCalcularComLactose8()">8%comLactose</button>
       </div>
     </form>
     <form [formGroup]="formularioTotalPartidaTotalEsperado">

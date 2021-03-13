@@ -22,11 +22,9 @@ export class AutoCalcularLightComLactoseService extends AutoCalcularBase{
                                      snfButterOil: number,
                                      gorduraLactose:number,
                                      snfLactose:number) {
-
+    this.resetarValores()
     let fatorAcucarRange = this.definirRange(fatorAcucarMinimo, fatorAcucarMaximo);
     let rfRange = this.definirRange(rfMinimo, rfMaximo);
-    this.resetarValores()
-
     this.correcoesIniciais(tfEsperado, snfAgua, gorduraAgua, acucar, esperadoSnf, snfPreDesnatado, gorduraPreDesnatado,snfLactose,gorduraLactose);
 
     while (!(fatorAcucarRange.includes(this.fatorAcucarAtual) && rfRange.includes(this.rfAtual) && this.tfAtual == tfEsperado)) {
