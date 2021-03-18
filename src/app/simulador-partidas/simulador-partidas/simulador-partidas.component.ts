@@ -35,6 +35,8 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
   @ViewChild('deduzidoComSucessoModal', {static: false}) deduzidoComSucessoModal: TemplateRef<any>;
   esconderBotaoDeduzirEstoque: boolean = true;
   static indice: number = 0;
+  formulaEscolhidaNome:string;
+
 
 
   constructor(private formBuilder: FormBuilder,
@@ -158,6 +160,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       //controles do formulario
       analiseGordura: [],
       analiseSnf: [],
+      materiaPrima:[],
       quantidade: [],
       kgGordura: [],
       kgSnf: [],
@@ -178,6 +181,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     this.formArray.removeAt(index);
     const el = this.quantidadeInput.nativeElement.focus();//retira da quantidade total pois elemento perde o foco
     SimuladorPartidasComponent.indice--;
+
 
   }
 
@@ -310,6 +314,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
       faMaximo?.setValue(formula.faMaximo)
       tfObjetivo?.setValue(formula.tfObjetivo);
       acucar?.setValue(formula.quantidadeDeAcucar);
+      this.formulaEscolhidaNome=formula.gordura
       this.quantidadeInput.nativeElement.focus();
       this.mudarTotalEsperadoQuandoMudarAFormula();
     });
@@ -738,6 +743,119 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     lactose.patchValue({quantidade:result.lactose})
     this.atualizarDadosFormulario(4)
     console.log(result)
-
   }
+
+  public verificarSequenciaMateriasPrimasAutoCalcular8SemLactose():string{
+    if(this.formArray.controls.length==4){
+      let leiteIntegral = this.formArray.controls[0];
+      let preCondensadoDesnatado = this.formArray.controls[1];
+      let preCondensadoIntegral = this.formArray.controls[2];
+      let butterOil = this.formArray.controls[3];
+      if(leiteIntegral.get('materiaPrima')?.value=='leite integral'&&
+        preCondensadoDesnatado.get('materiaPrima')?.value=='pre desnatado'&&
+        preCondensadoIntegral.get('materiaPrima')?.value=='pre integral'&&
+        (butterOil.get('materiaPrima')?.value=='butter oil'||butterOil.get('materiaPrima')?.value=='creme')){
+        return 'autoCalcular8SemLactose'
+      }
+    }
+    return ''
+  }
+
+  public verificarSequenciaMateriasPrimasAutoCalcular8ComLactose():string{
+    if(this.formArray.controls.length==5){
+      let leiteIntegral = this.formArray.controls[0];
+      let preCondensadoDesnatado = this.formArray.controls[1];
+      let preCondensadoIntegral = this.formArray.controls[2];
+      let butterOil = this.formArray.controls[3];
+      let lactose = this.formArray.controls[4];
+      if(leiteIntegral.get('materiaPrima')?.value=='leite integral'&&
+        preCondensadoDesnatado.get('materiaPrima')?.value=='pre desnatado'&&
+        preCondensadoIntegral.get('materiaPrima')?.value=='pre integral'&&
+        (butterOil.get('materiaPrima')?.value=='butter oil'||butterOil.get('materiaPrima')?.value=='creme')&&
+        lactose.get('materiaPrima')?.value=='lactose'){
+        return 'autoCalcular8ComLactose'
+      }
+    }
+
+    return ''
+  }
+
+  public verificarSequenciaMateriasPrimasAutoCalcularLightSemLactose():string{
+    if(this.formArray.controls.length==3){
+      let agua = this.formArray.controls[0];
+      let preCondensadoDesnatado = this.formArray.controls[1];
+      let butterOil = this.formArray.controls[2];
+      if(agua.get('materiaPrima')?.value=='agua'&&
+        preCondensadoDesnatado.get('materiaPrima')?.value=='pre desnatado'&&
+        (butterOil.get('materiaPrima')?.value=='butter oil'||butterOil.get('materiaPrima')?.value=='creme'||butterOil.get('materiaPrima')?.value=='pre integral')){
+        return 'autoCalcularLightSemLactose'
+      }
+    }
+    return ''
+  }
+
+  public verificarSequenciaMateriasPrimasAutoCalcularLightComLactose():string{
+    if(this.formArray.controls.length==4){
+      let agua = this.formArray.controls[0];
+      let preCondensadoDesnatado = this.formArray.controls[1];
+      let butterOil = this.formArray.controls[2];
+      let lactose=this.formArray.controls[3];
+      if(agua.get('materiaPrima')?.value=='agua'&&
+        preCondensadoDesnatado.get('materiaPrima')?.value=='pre desnatado'&&
+        (butterOil.get('materiaPrima')?.value=='butter oil'||butterOil.get('materiaPrima')?.value=='creme'||butterOil.get('materiaPrima')?.value=='pre integral')&&
+        lactose.get('materiaPrima')?.value=='lactose'){
+        return 'autoCalcularLightComLactose'
+      }
+    }
+    return ''
+  }
+
+  public verificarSequenciaMateriasPrimasAutoCalcular4E6SemLactose():string{
+    if(this.formArray.controls.length==3){
+      let leite = this.formArray.controls[0];
+      let preCondensadoDesnatado = this.formArray.controls[1];
+      let preIntegral = this.formArray.controls[2];
+      if(leite.get('materiaPrima')?.value=='leite integral'&&
+        preCondensadoDesnatado.get('materiaPrima')?.value=='pre desnatado'&&
+        preIntegral.get('materiaPrima')?.value=='pre integral'){
+        return 'autoCalcular4ESemLactose'
+      }
+    }
+    return ''
+  }
+
+  public verificarSequenciaMateriasPrimasAutoCalcular4E6ComLactose():string{
+    if(this.formArray.controls.length==4){
+      let leite = this.formArray.controls[0];
+      let preCondensadoDesnatado = this.formArray.controls[1];
+      let preIntegral = this.formArray.controls[2];
+      let lactose=this.formArray.controls[3]
+      if(leite.get('materiaPrima')?.value=='leite integral'&&
+        preCondensadoDesnatado.get('materiaPrima')?.value=='pre desnatado'&&
+        preIntegral.get('materiaPrima')?.value=='pre integral'&&
+        lactose.get('materiaPrima')?.value=='lactose'){
+        return 'autoCalcular4E6ComLactose'
+      }
+    }
+    return ''
+  }
+
+  public exibirBotaoDeduzirDoEstoque():boolean{
+     let fa=parseFloat(this.formularioVariaves.get('fatorAcucarAtual')?.value)
+     let faMin=parseFloat(this.formularioVariaves.get('fatorAcucarMinimo')?.value)
+     let faMax=parseFloat(this.formularioVariaves.get('fatorAcucarMaximo')?.value)
+
+     let rf=parseFloat(this.formularioVariaves.get('rfAtual')?.value)
+     let rfMin=parseFloat(this.formularioVariaves.get('rfMinimo')?.value)
+     let rfMax=parseFloat(this.formularioVariaves.get('rfMaximo')?.value)
+
+     let tfAtual=parseFloat(this.formularioVariaves.get('tf')?.value)
+     let tfObjetivo=parseFloat(this.formularioVariaves.get('tfObjetivo')?.value)
+
+    if(tfAtual==tfObjetivo&&(fa>=faMin&&fa<=faMax)&&(rf>=rfMin&&rf<=rfMax)){
+      return true
+    }
+    return false
+  }
+
 }

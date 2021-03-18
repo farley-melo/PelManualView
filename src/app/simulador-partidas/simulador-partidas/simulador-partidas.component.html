@@ -43,7 +43,7 @@
 
               </td>
               <td>
-
+                <input formControlName="materiaPrima">
               </td>
 
               <td>
@@ -73,12 +73,12 @@
             </tbody>
           </table>
         </div>
-        <button class="btn btn-success " (click)="autoCalcularLightComLactose()" >LightComLactose</button>
-        <button class="btn btn-success " (click)="autoCalcularLightSemLactose()" >LightSemLactose</button>
-        <button class="btn btn-success " (click)="autoCalcular4E6SemLactose()">4E6SemLactose</button>
-        <button class="btn btn-success " (click)="autoCalcular4E6ComLactose()">4E6ComLactose</button>
-        <button class="btn btn-success " (click)="autoCalcularSemLactose8()">8%semLactose</button>
-        <button class="btn btn-success " (click)="autoCalcularComLactose8()">8%comLactose</button>
+        <button class="btn btn-success " (click)="autoCalcularLightSemLactose()" *ngIf="formulaEscolhidaNome=='light'&&verificarSequenciaMateriasPrimasAutoCalcularLightSemLactose()=='autoCalcularLightSemLactose'" >Auto calcular</button>
+        <button class="btn btn-success " (click)="autoCalcularLightComLactose()" *ngIf="formulaEscolhidaNome=='light'&&verificarSequenciaMateriasPrimasAutoCalcularLightComLactose()=='autoCalcularLightComLactose'">Auto calcular</button>
+        <button class="btn btn-success " (click)="autoCalcular4E6SemLactose()"*ngIf="(formulaEscolhidaNome=='4'||formulaEscolhidaNome=='6')&&verificarSequenciaMateriasPrimasAutoCalcular4E6SemLactose()=='autoCalcular4ESemLactose'">Auto calcular</button>
+        <button class="btn btn-success " (click)="autoCalcular4E6ComLactose()"*ngIf="(formulaEscolhidaNome=='4'||formulaEscolhidaNome=='6')&&verificarSequenciaMateriasPrimasAutoCalcular4E6ComLactose()=='autoCalcular4E6ComLactose'">Auto calcular</button>
+        <button class="btn btn-success " (click)="autoCalcularSemLactose8()"*ngIf="formulaEscolhidaNome=='8.10'&&verificarSequenciaMateriasPrimasAutoCalcular8SemLactose()=='autoCalcular8SemLactose'">Auto calcular</button>
+        <button class="btn btn-success " (click)="autoCalcularComLactose8()"*ngIf="formulaEscolhidaNome=='8.10'&&verificarSequenciaMateriasPrimasAutoCalcular8ComLactose()=='autoCalcular8ComLactose'">Auto calcular</button>
       </div>
     </form>
     <form [formGroup]="formularioTotalPartidaTotalEsperado">
@@ -191,6 +191,7 @@
 
   <div class="form-inline col-12 offset-3 mb-3">
     <button printSectionId="impressao" ngxPrint [useExistingCss]="true" class="btn btn-success buttonLarge ">Imprimir</button>
+    <button class="btn btn-danger buttonLarge ml-3 " *ngIf="exibirBotaoDeduzirDoEstoque()">Deduzir do estoque</button>
   </div>
 
 

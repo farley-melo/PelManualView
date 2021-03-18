@@ -29,7 +29,7 @@ export class AutoCalcular8SemLactoseService extends AutoCalcularBase{
 
     while (!(fatorAcucarRange.includes(this.fatorAcucarAtual) && rfRange.includes(this.rfAtual) && this.tfAtual == tfEsperado)) {
       this.quantidadeDeTentativas += 1;
-      if (this.quantidadeDeTentativas > 100) {
+      if (this.quantidadeDeTentativas > 500) {
         alert('nao foi possivel calcular tente ajustar manualmente ou acrescente outra materia prima');
         // this.resetarValores()
         break;
