@@ -69,7 +69,7 @@ export class SimuladorPartidasComponent implements OnInit, OnDestroy {
     this.formularioValoresInputados = this.formBuilder.group({
       balanca: [],
       numeroDaPartida: [],
-      data: [],
+      data: [new Date()],
       linhas: this.formBuilder.array([this.iniciarLinhas()])
     });
     this.formularioTotalPartidaTotalEsperado = this.formBuilder.group({

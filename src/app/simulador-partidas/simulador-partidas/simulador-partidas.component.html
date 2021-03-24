@@ -13,9 +13,9 @@
             <label class="text-danger h3 ml-4 ">Numero da partida:</label>
             <input type="text" class="form-control" formControlName="numeroDaPartida">
             <label class="text-danger h3 ml-4">Data:</label>
-            <input type="text" class="form-control" style="margin-right: 2px" bsDatepicker
-                   [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY'}"
-                   formControlName="data">
+            <input type="text" class="form-control" style="margin-right: 2px"
+                   [bsValue]="formularioValoresInputados?.get('data')?.value"  [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY'}"
+                   formControlName="data" bsDatepicker>
           </div>
         </div>
       </div>
