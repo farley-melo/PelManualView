@@ -3,26 +3,42 @@
     <h3 class="offset-4">Cadastro de formulas</h3>
   </div>
   <div class="card-body">
-    <form  [formGroup]="formularioCadastro">
+    <form [formGroup]="formularioCadastro">
       <div class="form-row">
         <div class="form-group col-md-3">
           <label for="gordura">Gordura</label>
           <input type="text" class="form-control" id="gordura" formControlName="gordura">
         </div>
         <div class="form-group col-md-3">
-          <label for="fatorAcucar">Fator açucar</label>
-          <input type="text" class="form-control" id="fatorAcucar"formControlName="fatorAcucar" >
+          <label for="fatorAcucarMinimo">Fator açucar minimo</label>
+          <input type="text" class="form-control" id="fatorAcucarMinimo" formControlName="fatorAcucarMinimo">
         </div>
         <div class="form-group col-md-3">
-          <label for="rf">Rf</label>
+          <label for="fatorAcucar">Fator açucar objetivo</label>
+          <input type="text" class="form-control" id="fatorAcucar" formControlName="fatorAcucar">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="fatorAcucarMaximo">Fator açucar maximo</label>
+          <input type="text" class="form-control" id="fatorAcucarMaximo" formControlName="fatorAcucarMaximo">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="rfMinimo">Rf minimo</label>
+          <input type="text" class="form-control" id="rfMinimo" formControlName="rfMinimo">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="rf">Rf objetivo</label>
           <input type="text" class="form-control" id="rf" formControlName="rf">
         </div>
         <div class="form-group col-md-3">
+          <label for="rfMaximo">Rf maximo</label>
+          <input type="text" class="form-control" id="rfMaximo" formControlName="rfMaximo">
+        </div>
+        <div class="form-group col-md-3">
           <label for="acucar">Açucar</label>
-          <input type="text" class="form-control" id="acucar" formControlName="acucar" >
+          <input type="text" class="form-control" id="acucar" formControlName="acucar">
         </div>
       </div>
-      <button  class="btn btn-success"(click)="cadastrar()">Cadastrar</button>
+      <button class="btn btn-success" (click)="cadastrar()">Cadastrar</button>
     </form>
   </div>
 </div>
@@ -33,27 +49,45 @@
   </div>
   <div class="card-body">
     <form>
-      <div class="form-row bg-warning" *ngFor="let formula of listaFormulasResult;let i=index">
-        <div class="form-group col-md-2">
-          <label for="gordura1">Gordura</label>
-          <input type="text" class="form-control" id="gordura1" value="{{formula.gordura}}">
+      <div class="form-row card-body bg-light" *ngFor="let formula of listaFormulasResult;let i=index">
+          <div class="row mt-2 bg-warning">
+            <div class="form-group col-md-4">
+              <label for="gordura1">Gordura</label>
+              <input type="text" class="form-control" id="gordura1" value="{{formula.gordura}}">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="fatorAcucarMinimo1">Fator açucar minimo</label>
+              <input type="text" class="form-control" id="fatorAcucarMinimo1" value="{{formula.fatorAcucarMin}}">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="fatorAcucar1">Fator açucar objetivo</label>
+              <input type="text" class="form-control" id="fatorAcucar1" value="{{formula.fatorAcucar}}">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="fatorAcucarMaximo1">Fator açucar maximo</label>
+              <input type="text" class="form-control" id="fatorAcucarMaximo1" value="{{formula.fatorAcucarMax}}">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="rfMinimo1">Rf minimo</label>
+              <input type="text" class="form-control" id="rfMinimo1" value="{{formula.rfMin}}">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="rf1">Rf</label>
+              <input type="text" class="form-control" id="rf1" value="{{formula.rf}}">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="rf1Maximo">Rf maximo</label>
+              <input type="text" class="form-control" id="rf1Maximo" value="{{formula.rfMax}}">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="acucar1">Açucar</label>
+              <input type="text" class="form-control" id="acucar1" value="{{formula.acucar}}">
+            </div>
+            <div class="form-inline col-md-3 mt-4">
+              <button class="btn btn-danger" (click)="excluirFormula(i)">Excluir</button>
+            </div>
+          </div>
         </div>
-        <div class="form-group col-md-2">
-          <label for="fatorAcucar1">Fator açucar</label>
-          <input type="text" class="form-control" id="fatorAcucar1" value="{{formula.fatorAcucar}}" >
-        </div>
-        <div class="form-group col-md-2">
-          <label for="rf1">Rf</label>
-          <input type="text" class="form-control" id="rf1" value="{{formula.rf}}" >
-        </div>
-        <div class="form-group col-md-2">
-          <label for="acucar1">Açucar</label>
-          <input type="text" class="form-control" id="acucar1" value="{{formula.acucar}}">
-        </div>
-        <div class="form-inline col-md-3 mt-4">
-          <button class="btn btn-danger" (click)="excluirFormula(i)">Excluir</button>
-        </div>
-      </div>
     </form>
   </div>
 </div>
@@ -75,8 +109,8 @@
 <ng-template #desejaDeletartemplate>
   <div class="modal-body text-center">
     <p>Voce deseja realmente excluir esta formula?</p>
-    <button type="button" class="btn btn-default" (click)="confirm()" >Sim</button>
-    <button type="button" class="btn btn-primary" (click)="decline()" >Não</button>
+    <button type="button" class="btn btn-default" (click)="confirm()">Sim</button>
+    <button type="button" class="btn btn-primary" (click)="decline()">Não</button>
   </div>
 </ng-template>
 

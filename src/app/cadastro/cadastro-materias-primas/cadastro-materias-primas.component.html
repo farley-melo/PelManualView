@@ -5,9 +5,17 @@
   <div class="card-body">
     <form [formGroup]="formularioCadastro">
       <div class="form-row">
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-4">
           <label for="nome">Nome</label>
           <input type="text" class="form-control" id="nome" formControlName="nome">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="codigo">Codigo</label>
+          <input type="text" class="form-control" id="codigo" formControlName="codigo">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="procedencia">Procedencia</label>
+          <input type="text" class="form-control" id="procedencia" formControlName="procedencia">
         </div>
       </div>
       <button  class="btn btn-success"(click)="cadastrar()">Cadastrar</button>
@@ -21,10 +29,18 @@
   </div>
   <div class="card-body">
     <form>
-      <div class="form-row bg-warning col-5"*ngFor="let materiaPrima of listaMateriaPrimaResult;let i=index">
-        <div class="form-group col-md-8">
+      <div class="form-row bg-warning col-12"*ngFor="let materiaPrima of listaMateriaPrimaResult;let i=index">
+        <div class="form-group col-md-3">
           <label for="nome2">Nome</label>
           <input type="text" class="form-control" id="nome2" value="{{materiaPrima.nome}}" >
+        </div>
+        <div class="form-group col-md-3">
+          <label for="codigo2">Codigo</label>
+          <input type="text" class="form-control" id="codigo2" value="{{materiaPrima.codigo}}" >
+        </div>
+        <div class="form-group col-md-3">
+          <label for="procedencia2">Procedencia</label>
+          <input type="text" class="form-control" id="procedencia2" value="{{materiaPrima.procedencia}}" >
         </div>
         <div class="form-inline col-md-3 mt-4">
           <button class="btn btn-danger"(click)="excluirMateriaPrima(i)">Excluir</button>
@@ -43,7 +59,7 @@
   </div>
   <div class="modal-body">
     <ul>
-      <li>{{referenciaModalError.content}}</li>
+      <li *ngFor="let error of referenciaModalError.content">{{error}}</li>
     </ul>
   </div>
 </ng-template>

@@ -26,6 +26,8 @@ export class CadastroMateriasPrimasComponent implements OnInit {
   ngOnInit(): void {
     this.formularioCadastro=this.formsBuilder.group({
       nome:['',[Validators.required]],
+      codigo:['',[Validators.required]],
+      procedencia:['',[Validators.required]]
     });
   }
 
@@ -33,13 +35,27 @@ export class CadastroMateriasPrimasComponent implements OnInit {
     if(this.formularioCadastro.valid){
        let materiaPrima:MateriaPrima=new MateriaPrima();
        materiaPrima.nome=this.formularioCadastro.get('nome')?.value;
+       materiaPrima.codigo=this.formularioCadastro.get('codigo')?.value;
+       materiaPrima.procedencia=this.formularioCadastro.get('procedencia')?.value
        this.listaMateriaPrimaResult.push(materiaPrima);
        this.formularioCadastro.reset();
 
     }else{
       this.referenciaModalError=this.modalService.show(this.errorTemplate,{class:'modal-dialog-centered'});
+      let listaDeErros:string[]=[]
+      Object.keys(this.formularioCadastro.controls).forEach(nomeControle=>{
+        if(nomeControle=='nome'&&this.formularioCadastro.get(nomeControle)?.invalid){
+          listaDeErros.push('O nome da materia prima nao pode estar em branco')
+        }
+        if(nomeControle=='codigo'&&this.formularioCadastro.get(nomeControle)?.invalid){
+          listaDeErros.push('O codigo da materia prima nao pode estar em branco')
+        }
+        if(nomeControle=='procedencia'&&this.formularioCadastro.get(nomeControle)?.invalid){
+          listaDeErros.push('A procedencia da materia prima nao pode estar em branco')
+        }
+      })
 
-      this.referenciaModalError.content="O nome da materia prima nao pode estar em branco";
+      this.referenciaModalError.content=listaDeErros;
     }
   }
 

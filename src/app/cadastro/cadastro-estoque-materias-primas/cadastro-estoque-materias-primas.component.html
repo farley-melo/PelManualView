@@ -14,15 +14,6 @@
           <input type="text" class="form-control" id="capacidade" formControlName="capacidade" (keypress)="somenteNumeros($event)">
         </div>
       </div>
-      <h4>Escolha as materias primas que este deposito pode conter:</h4>
-      <div class="form-inline bg-warning" formArrayName="materiasPrimas">
-        <div class="form-check ml-5 " *ngFor="let materiasPrimas of obterFormArray().controls;let i=index">
-          <input class="form-check-input mt-1" type="checkbox" id="gridCheck" [formControlName]="i">
-          <label class="form-check-label " for="gridCheck">
-            {{listaDeMateriasPrimas[i]}}
-          </label>
-        </div>
-      </div>
       <button  class="btn btn-success" (click)="cadastrar()">Cadastrar</button>
     </form>
   </div>
@@ -42,12 +33,6 @@
         <div class="form-group col-md-3">
           <label for="capacidade2">Capacidade</label>
           <input type="text" class="form-control" id="capacidade2" value="{{tanque.capacidade}}" >
-        </div>
-        <div class="form-group col-md-3">
-          <label for="materiasPrimas">Materias primas</label>
-          <select type="text" class="form-control" id="materiasPrimas">
-            <option *ngFor="let materia of tanque.materiasPrimas">{{materia}}</option>
-          </select>
         </div>
         <div class="form-inline col-md-3 mt-4">
           <button class="btn btn-danger" (click)="excluirEstoque(i)">Excluir</button>

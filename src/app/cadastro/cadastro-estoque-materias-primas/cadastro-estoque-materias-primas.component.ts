@@ -31,18 +31,10 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
     this.formularioCadastro=this.formsBuilder.group({
       nome:['',[Validators.required]],
       capacidade:['',Validators.required],
-      materiasPrimas:this.addFormArray()
     });
   }
 
-  obterFormArray():FormArray{
-   return  this.formularioCadastro.get('materiasPrimas') as FormArray;
-  }
 
-  addFormArray(){
-    let values=this.listaDeMateriasPrimas.map(materiaPrima=>new FormControl(false));
-    return this.formsBuilder.array(values,[this.peloMenosUmCheckBoxValidation(1)])
-  }
 
   //validacoes
   somenteNumeros($event: KeyboardEvent) {
@@ -50,15 +42,6 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
     let result = patt.test($event.key);
     return result;
 
-  }
-  peloMenosUmCheckBoxValidation(min:number=1){
-    let validator=(form:AbstractControl)=>{
-       const totalChecked=(<FormArray>form).controls
-         .map(v => v.value)
-         .reduce((total,current)=>current?total+current:total,0);
-       return totalChecked>=min ? null:{checkboxError:'Deve marcar ao menos um check box'};
-    };
-    return validator;
   }
 
   cadastrar() {
@@ -68,11 +51,6 @@ export class CadastroEstoqueMateriasPrimasComponent implements OnInit {
       let listaMateriaPrimaResult:string[]=[];
       estoque.nome=this.formularioCadastro.get('nome')?.value;
       estoque.capacidade=this.formularioCadastro.get('capacidade')?.value;
-      for (let i=0;i<this.listaDeMateriasPrimas.length;i++){
-        if(this.obterFormArray().controls[i].value==true){
-          listaMateriaPrimaResult.push(this.listaDeMateriasPrimas[i]);
-        }
-      }
       estoque.materiasPrimas=listaMateriaPrimaResult;
       this.listaTanque.push(estoque);
       this.formularioCadastro.reset();
