@@ -25,14 +25,14 @@
   </div>
   <div class="card-body">
     <form>
-      <div class="form-row bg-warning" *ngFor="let tanque of listaTanque;let i=index">
+      <div class="form-row bg-warning" *ngFor="let deposito of listaDepositos;let i=index">
         <div class="form-group col-md-3">
           <label for="nome2">Nome</label>
-          <input type="text" class="form-control" id="nome2" value="{{tanque.nome}}">
+          <input type="text" class="form-control" id="nome2" value="{{deposito.nome}}">
         </div>
         <div class="form-group col-md-3">
           <label for="capacidade2">Capacidade</label>
-          <input type="text" class="form-control" id="capacidade2" value="{{tanque.capacidade}}" >
+          <input type="text" class="form-control" id="capacidade2" value="{{deposito.capacidade}}" >
         </div>
         <div class="form-inline col-md-3 mt-4">
           <button class="btn btn-danger" (click)="excluirEstoque(i)">Excluir</button>
@@ -61,5 +61,11 @@
     <p>Voce deseja realmente excluir este estoque?</p>
     <button type="button" class="btn btn-default" (click)="confirm()" >Sim</button>
     <button type="button" class="btn btn-primary" (click)="decline()" >Não</button>
+  </div>
+</ng-template>
+
+<ng-template #sucessTemplate>
+  <div class="modal-header bg-success row" >
+    <h4 class="modal-title pull-left offset-2">Deposito cadastrado com sucesso</h4>
   </div>
 </ng-template>

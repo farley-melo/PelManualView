@@ -1,0 +1,37 @@
+a { cursor: pointer; }
+
+
+
+
+td{
+  width: 25px;
+  padding: 0px;
+  text-align: center;
+}
+
+table{
+  width: auto;
+  font-size: 8px;
+}
+
+
+th{
+  text-align: center;
+}
+
+
+textarea{
+  width: 80px;
+  text-align: center;
+  resize: none;
+}
+.diminuir{
+  transform: scaleX(0.90);
+}
+select{
+  width: 80px;
+  height: 44px;
+  text-align: center;
+  resize: none;
+}
+

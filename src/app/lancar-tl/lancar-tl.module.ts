@@ -7,13 +7,19 @@ import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
 import {ReactiveFormsModule} from '@angular/forms';
 
 
+
 @NgModule({
-  declarations: [LancarTlComponent],
+    declarations: [LancarTlComponent],
+    exports: [
+        LancarTlComponent
+    ],
   imports: [
     CommonModule,
     LancarTlRoutingModule,
     BsDatepickerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+
+
   ]
 })
 export class LancarTlModule { }

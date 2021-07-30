@@ -61,7 +61,7 @@
             </div>
             <div class="form-group col-md-4">
               <label for="fatorAcucar1">Fator açucar objetivo</label>
-              <input type="text" class="form-control" id="fatorAcucar1" value="{{formula.fatorAcucar}}">
+              <input type="text" class="form-control" id="fatorAcucar1" value="{{formula.fatorAcucarObj}}">
             </div>
             <div class="form-group col-md-4">
               <label for="fatorAcucarMaximo1">Fator açucar maximo</label>
@@ -72,8 +72,8 @@
               <input type="text" class="form-control" id="rfMinimo1" value="{{formula.rfMin}}">
             </div>
             <div class="form-group col-md-4">
-              <label for="rf1">Rf</label>
-              <input type="text" class="form-control" id="rf1" value="{{formula.rf}}">
+              <label for="rf1">Rf objetivo</label>
+              <input type="text" class="form-control" id="rf1" value="{{formula.rfObj}}">
             </div>
             <div class="form-group col-md-4">
               <label for="rf1Maximo">Rf maximo</label>
@@ -111,6 +111,12 @@
     <p>Voce deseja realmente excluir esta formula?</p>
     <button type="button" class="btn btn-default" (click)="confirm()">Sim</button>
     <button type="button" class="btn btn-primary" (click)="decline()">Não</button>
+  </div>
+</ng-template>
+
+<ng-template #sucessTemplate>
+  <div class="modal-header bg-success row" >
+    <h4 class="modal-title pull-left offset-2">Formula cadastrada com sucesso</h4>
   </div>
 </ng-template>
 

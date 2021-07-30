@@ -8,6 +8,9 @@ import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {ProgressbarModule} from 'ngx-bootstrap/progressbar';
 import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
+import {HttpClientModule} from '@angular/common/http';
+import {NgxMaskModule} from 'ngx-mask';
+import {PaginationModule} from 'ngx-bootstrap/pagination';
 
 @NgModule({
   declarations: [
@@ -19,7 +22,10 @@ import {BsDatepickerModule} from 'ngx-bootstrap/datepicker';
     BrowserAnimationsModule,
     BsDropdownModule.forRoot(),
     ProgressbarModule.forRoot(),
-    BsDatepickerModule.forRoot()
+    BsDatepickerModule.forRoot(),
+    HttpClientModule,
+    NgxMaskModule.forRoot(),
+    PaginationModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

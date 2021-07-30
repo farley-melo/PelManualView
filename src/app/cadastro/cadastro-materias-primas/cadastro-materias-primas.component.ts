@@ -2,9 +2,11 @@ import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {BsModalRef, BsModalService} from 'ngx-bootstrap/modal';
 import {Estoque} from '../cadastro-estoque-materias-primas/estoque';
-import {EstoqueMateriaPrimaService} from '../cadastro-estoque-materias-primas/estoque-materia-prima.service';
+import {DepositosService} from '../cadastro-estoque-materias-primas/depositos.service';
 import {MateriaPrimaService} from './materia-prima.service';
 import {MateriaPrima} from './materia-prima';
+import {Formula} from '../cadastro-formulas/formula';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
   selector: 'app-cadastro-materias-primas',
@@ -14,16 +16,28 @@ import {MateriaPrima} from './materia-prima';
 export class CadastroMateriasPrimasComponent implements OnInit {
   formularioCadastro:FormGroup;
   @ViewChild('errorTemplate') errorTemplate:TemplateRef<any>;
+  @ViewChild('sucessTemplate') successTemplate:TemplateRef<any>;
   referenciaModalError:BsModalRef;
+  referenciaModalSuccess:BsModalRef;
   listaMateriaPrimaResult:MateriaPrima[]=[];
   @ViewChild('desejaDeletartemplate')desejaDeletartemplate:TemplateRef<any>;
   referenciaModalDeletar:BsModalRef;
   indiceParaMateriaPrima:number=0;
+  listaDeErros:string[]=[]
 
   constructor(private formsBuilder:FormBuilder,
-              private modalService:BsModalService) { }
+              private modalService:BsModalService,
+              private route:ActivatedRoute,
+              private materiaPrimaService:MateriaPrimaService) { }
 
   ngOnInit(): void {
+    this.route.data.subscribe(listaResult=>{
+      this.listaMateriaPrimaResult=(<MateriaPrima[]>listaResult.listaMateriasPrimas).sort((a:MateriaPrima,b:MateriaPrima)=>{
+        if(a.nome<b.nome)return -1
+        if(a.nome>b.nome)return 1
+        return 0
+      })
+    })
     this.formularioCadastro=this.formsBuilder.group({
       nome:['',[Validators.required]],
       codigo:['',[Validators.required]],
@@ -37,25 +51,41 @@ export class CadastroMateriasPrimasComponent implements OnInit {
        materiaPrima.nome=this.formularioCadastro.get('nome')?.value;
        materiaPrima.codigo=this.formularioCadastro.get('codigo')?.value;
        materiaPrima.procedencia=this.formularioCadastro.get('procedencia')?.value
-       this.listaMateriaPrimaResult.push(materiaPrima);
-       this.formularioCadastro.reset();
+       // cadastrar o deposito aqui console.log(materiaPrima)
+      this.materiaPrimaService.salvarMateriaPrima(materiaPrima).subscribe(materiaPrima=>{
+        this.listaMateriaPrimaResult.push(materiaPrima);
+        this.listaMateriaPrimaResult.sort((a:MateriaPrima,b:MateriaPrima)=>{
+          if(a.nome<b.nome)return -1
+          if(a.nome>b.nome)return 1
+          return 0
+        })
+        this.formularioCadastro.reset();
+        this.referenciaModalSuccess=this.modalService.show(this.successTemplate,{class:'modal-dialog-centered'})
+        setTimeout(()=>{this.referenciaModalSuccess.hide()},1000)
+      },error => {
+        this.listaDeErros=[]
+        this.referenciaModalError=this.modalService.show(this.errorTemplate,{class:'modal-dialog-centered'})
+        this.listaDeErros.push(error.error)
+        this.referenciaModalError.content=this.listaDeErros;
+        this.formularioCadastro.reset();
+      })
 
     }else{
+      this.listaDeErros=[]
       this.referenciaModalError=this.modalService.show(this.errorTemplate,{class:'modal-dialog-centered'});
-      let listaDeErros:string[]=[]
       Object.keys(this.formularioCadastro.controls).forEach(nomeControle=>{
         if(nomeControle=='nome'&&this.formularioCadastro.get(nomeControle)?.invalid){
-          listaDeErros.push('O nome da materia prima nao pode estar em branco')
+          this.listaDeErros.push('O nome da materia prima nao pode estar em branco')
         }
         if(nomeControle=='codigo'&&this.formularioCadastro.get(nomeControle)?.invalid){
-          listaDeErros.push('O codigo da materia prima nao pode estar em branco')
+          this.listaDeErros.push('O codigo da materia prima nao pode estar em branco')
         }
         if(nomeControle=='procedencia'&&this.formularioCadastro.get(nomeControle)?.invalid){
-          listaDeErros.push('A procedencia da materia prima nao pode estar em branco')
+          this.listaDeErros.push('A procedencia da materia prima nao pode estar em branco')
         }
       })
 
-      this.referenciaModalError.content=listaDeErros;
+      this.referenciaModalError.content=this.listaDeErros;
     }
   }
 
@@ -65,8 +95,10 @@ export class CadastroMateriasPrimasComponent implements OnInit {
   }
 
   confirm() {
-    this.listaMateriaPrimaResult.splice(this.indiceParaMateriaPrima,1);
-    this.referenciaModalDeletar.hide();
+    this.materiaPrimaService.deletarMateriaPrima(this.listaMateriaPrimaResult[this.indiceParaMateriaPrima].nome).subscribe(result=>{
+      this.listaMateriaPrimaResult.splice(this.indiceParaMateriaPrima,1);
+      this.referenciaModalDeletar.hide();
+    })
   }
 
   decline() {
